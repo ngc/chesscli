@@ -16,13 +16,56 @@ typedef queue<char> qc;
 typedef stack<int> si;
 typedef stack<char> sc;
 
+int board[8][8] = {
+	-1, -2, -3, -4, -5, -3, -2, -1,
+	-6, -6, -6, -6, -6, -6, -6, -6,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	6, 6, 6, 6, 6, 6, 6, 6,
+	1, 2, 3, 4, 5, 3, 2, 1,
+};
+
 bool checkMove(string command){
 	if(command.length() != 6) return false;
 	
-	int r1 = command[1] - '0';
+	int r1 = command[1] - '0' - 1;
 	int c1 = abs(command[0] - 'H');
+	int r2 = command[5] - '0' - 1;
+	int c2 = abs(command[4] - 'H');
 	
-	cout << "|" << r1 << "." << c1 << "\\" << "\n";
+	if(r1 == r2 && c1 == c2) return false;
+	if(c2 > 7 || c2 < 0 || c1 > 7 || c1 < 0 || r2 > 7 || r2 < 0 || r1 > 7 || r1 < 0) return false;
+	
+	//cout << "|" << r1 << "." << c1 << "\\" << "|" << r2 << "." << c2 << "\\" << "\n";
+	
+	switch(board[r1][c1]){
+		case 1: /*♖*/ 
+		if((r1 == r2 && c1 != c2) || (c1 == c2 && r1 != r2)){
+			board[r1][c1] = 0;
+			board[r2][c2] = 1;
+			return true;
+		}else{
+			return false;
+		}
+		
+		case 2: cout << "♘︎"; break;
+		case 3: cout << "♗︎"; break;
+		case 4: cout << "♕︎"; break;
+		case 5: cout << "♔"; break;
+		case 6: cout << "♙"; break;
+		
+		case 0: cout << "⠀"; break;
+		
+		case -1: cout << "♜"; break;
+		case -2: cout << "♞︎"; break;
+		case -3: cout << "♝︎"; break;
+		case -4: cout << "♛"; break;
+		case -5: cout << "♚"; break;
+		case -6: cout << "♟︎"; break;
+	}
+	
 	return true;
 }
 
@@ -48,7 +91,7 @@ int printCell(int val){
 	return 0;
 }
 
-int PrintBoard(int board[8][8]){
+int PrintBoard(){
 	//cout << "\x1B[2J\x1B[H";
 	system("clear");
 	for(int i = 0; i < 8; i++){
@@ -67,32 +110,26 @@ string pause() {
     cout << endl << "Last move: ";
     string command;
     getline(cin, command);
+    string command_display = command;
+    
 	command.erase(remove(command.begin(), command.end(), ' '), command.end()); 
-	return command;
+	for_each(command.begin(), command.end(), [](char & c){
+		c = ::toupper(c);
+	});
+	checkMove(command);
+	
+	return command_display;
 }
 
 int main(){
 	ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-	
-	int board[8][8] = {
-		-1, -2, -3, -4, -5, -3, -2, -1,
-		-6, -6, -6, -6, -6, -6, -6, -6,
-		0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0,
-		6, 6, 6, 6, 6, 6, 6, 6,
-		1, 2, 3, 4, 5, 3, 2, 1,
-		};
-
 
 	cout << "Example command: H7 -> H5 \n";
 	while(true){
-		PrintBoard(board);
+		PrintBoard();
 		cout << "Command: ";
 		string command = pause();
 		cout << command << "\n";
-		checkMove(command);
 	}
 
 	return 0;
