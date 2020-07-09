@@ -83,10 +83,10 @@ bool checkMove(string command, int side = 1){
 		}
 		
 		case 2: /*♘*/
-			switch(abs(r2 - r1)){
-				case  1: if(abs(c2 - c1) != 2) return false;
-				case  2: if(abs(c2 - c1) != 1) return false;
-			}
+			cout << "[" << abs(r2 - r1) << "]" << "[" << abs(c2 - c1) << "]\n";
+			
+			if(abs(r2 - r1) == 1 && abs(c2 - c1) != 2) return false;
+			if(abs(r2 - r1) == 2 && abs(c2 - c1) != 1) return false;
 			
 			board[r1][c1] = 0;
 			board[r2][c2] = 2;
@@ -110,7 +110,7 @@ bool checkMove(string command, int side = 1){
 				board[r1][c1] = 0;
 				board[r2][c2] = 6;
 				return true;
-			}else if(r1 == 6 && r2 - r1 == -2 && board[r2][c2] == 0){
+			}else if(r1 == 6 && r2 - r1 == -2 && board[r2][c2] == 0 && board[r2 + 1][c2] == 0){
 				board[r1][c1] = 0;
 				board[r2][c2] = 6;
 				return true;
