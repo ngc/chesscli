@@ -16,6 +16,16 @@ typedef queue<char> qc;
 typedef stack<int> si;
 typedef stack<char> sc;
 
+bool checkMove(string command){
+	if(command.length() != 6) return false;
+	
+	int r1 = command[1] - '0';
+	int c1 = abs(command[0] - 'H');
+	
+	cout << "|" << r1 << "." << c1 << "\\" << "\n";
+	return true;
+}
+
 int printCell(int val){
 	switch(val){
 		case 1: cout << "♖"; break;
@@ -57,6 +67,7 @@ string pause() {
     cout << endl << "Last move: ";
     string command;
     getline(cin, command);
+	command.erase(remove(command.begin(), command.end(), ' '), command.end()); 
 	return command;
 }
 
@@ -78,7 +89,10 @@ int main(){
 	cout << "Example command: H7 -> H5 \n";
 	while(true){
 		PrintBoard(board);
-		cout << "Command: " << pause() << "\n";
+		cout << "Command: ";
+		string command = pause();
+		cout << command << "\n";
+		checkMove(command);
 	}
 
 	return 0;
