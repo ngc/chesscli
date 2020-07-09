@@ -27,6 +27,28 @@ int board[8][8] = {
 	1, 2, 3, 4, 5, 3, 2, 1,
 };
 
+int printCell(int val){
+	switch(val){
+		case 1: cout << "♖"; break;
+		case 2: cout << "♘︎"; break;
+		case 3: cout << "♗︎"; break;
+		case 4: cout << "♕︎"; break;
+		case 5: cout << "♔"; break;
+		case 6: cout << "♙"; break;
+		
+		case 0: cout << "⠀"; break;
+		
+		case -1: cout << "♜"; break;
+		case -2: cout << "♞︎"; break;
+		case -3: cout << "♝︎"; break;
+		case -4: cout << "♛"; break;
+		case -5: cout << "♚"; break;
+		case -6: cout << "♟︎"; break;
+	}
+	cout << "⠀";
+	return 0;
+}
+
 bool checkMove(string command){
 	if(command.length() != 6) return false;
 	
@@ -43,6 +65,19 @@ bool checkMove(string command){
 	switch(board[r1][c1]){
 		case 1: /*♖*/ 
 		if((r1 == r2 && c1 != c2) || (c1 == c2 && r1 != r2)){
+			if(c2 == c1){
+				for(int j = 0; j < abs(r2 - r1); j++){
+					int cur = j * (((r1 > r2) * -1) + (r1 < r2));
+					cout << "SEARCHING: ROW: " << r1 + cur << " COL: " << c2 << " | " << printCell(board[r1 + cur][c1]) << "\n";
+					if(board[r1 + cur][c1] != 0 && cur != 0) return false;
+				}
+			}else{
+				for(int j = 0; j < abs(c2 - c1); j++){
+					int cur = j * ((c1 > c2 * -1) + c1 < c2);
+					cout << printCell(board[r1][c1 + cur]) << "\n";
+					if(board[r1][c1 + cur] != 0) return false;
+				}	
+			}
 			board[r1][c1] = 0;
 			board[r2][c2] = 1;
 			return true;
@@ -69,30 +104,7 @@ bool checkMove(string command){
 	return true;
 }
 
-int printCell(int val){
-	switch(val){
-		case 1: cout << "♖"; break;
-		case 2: cout << "♘︎"; break;
-		case 3: cout << "♗︎"; break;
-		case 4: cout << "♕︎"; break;
-		case 5: cout << "♔"; break;
-		case 6: cout << "♙"; break;
-		
-		case 0: cout << "⠀"; break;
-		
-		case -1: cout << "♜"; break;
-		case -2: cout << "♞︎"; break;
-		case -3: cout << "♝︎"; break;
-		case -4: cout << "♛"; break;
-		case -5: cout << "♚"; break;
-		case -6: cout << "♟︎"; break;
-	}
-	cout << "⠀";
-	return 0;
-}
-
 int PrintBoard(){
-	//cout << "\x1B[2J\x1B[H";
 	system("clear");
 	for(int i = 0; i < 8; i++){
 		cout << i + 1 << " ";
