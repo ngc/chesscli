@@ -21,7 +21,7 @@ int board[8][8] = {
 	-6, -6, -6, -6, -6, -6, -6, -6,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 3, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	6, 6, 6, 6, 6, 6, 6, 6,
 	1, 2, 3, 4, 5, 3, 2, 1,
@@ -86,20 +86,11 @@ bool checkMove(string command, int side = 1){
 		
 		case 2: cout << "♘︎"; break;
 		case 3: /*♗*/
-			if(abs(r2 - r1) == abs(c2 - c1)){
-				
-			if(c2 == c1){
-				for(int j = 1; j < abs(r2 - r1); j++){
-					int cur = j * (((r1 > r2) * -1) + (r1 < r2));
-					if(board[r1 + cur][c1] != 0) return false;
+			if(abs(r2 - r1) == abs(c2 - c1) && (board[r2][c2] / side) <= 0){
+				for(int i = 1; i < abs(c2 - c1); i++){
+					if(board[r1 + (i * (((r1 > r2) * -1) + (r1 < r2)))][c1 + (i * (((c1 > c2) * -1) + (c1 < c2)))] != 0) return false;
 				}
-			}else{
-				for(int j = 1; j < abs(c2 - c1); j++){
-					int cur = j * (((c1 > c2) * -1) + (c1 < c2));
-					cout << printCell(board[r1][c1 + cur]) << "\n";
-					if(board[r1][c1 + cur] != 0) return false;
-				}	
-			}
+			
 				board[r1][c1] = 0;
 				board[r2][c2] = 3;
 				return true;
