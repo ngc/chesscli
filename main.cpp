@@ -21,11 +21,22 @@ int board[8][8] = {
 	-6, -6, -6, -6, -6, -6, -6, -6,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, -3, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
-	6, 6, 6, 6, 0, 6, 6, 6,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	6, 6, 6, 6, 6, 6, 6, 6,
 	1, 2, 3, 4, 5, 3, 2, 1,
 };
+
+/*int board[8][8] = {
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, -3, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 5, 0, 0, 0,
+};*/
 
 int kingmap[8][8];
 
@@ -38,8 +49,8 @@ void paintmap(int rd, int cd, int r, int c){
 	if(r > 7 || r < 0) return;
 	if(c > 7 || c < 0) return;
 	
-	if(board[r][c] != 0) return;
 	kingmap[r][c] = -1;
+	if(board[r][c] != 0) return;
 	if(rd == 0 && cd == 0) return;
 	paintmap(rd, cd, r, c);
 }
@@ -69,6 +80,7 @@ void generateKingmap(int side){
 				paintmap(1, 0, i, j);
 				paintmap(0, 1, i, j);
 				paintmap(0, -1, i, j);
+				break;
 				
 			case 2:/*♘︎*/
 				for(int f = 0; f < 8; f++){
@@ -77,12 +89,14 @@ void generateKingmap(int side){
 					if(r < 0 || r > 7 || c < 0 || c > 7) continue;
 					kingmap[r][c] = -1;
 				}
+				break;
 			
 			case 3:/*♗︎*/
 				paintmap(-1, -1, i, j);
 				paintmap(1, -1, i, j);
 				paintmap(-1, 1, i, j);
 				paintmap(1, 1, i, j);
+				break;
 			
 			case 4:/*♕*/
 				paintmap(-1, -1, i, j);
@@ -94,6 +108,7 @@ void generateKingmap(int side){
 				paintmap(1, 0, i, j);
 				paintmap(0, 1, i, j);
 				paintmap(0, -1, i, j);
+				break;
 			
 			case 5:/*♔*/
 				paintmap(0, 0, i + 1, j + 1);
@@ -104,10 +119,12 @@ void generateKingmap(int side){
 				paintmap(0, 0, i - 1, j);
 				paintmap(0, 0, i, j + 1);
 				paintmap(0, 0, i, j - 1);
+				break;
 			
 			case 6:/*♙*/
 				paintmap(0, 0, i + side, j + side);
 				paintmap(0, 0, i + side, j + side * -1);
+				break;
 		}
 		
 		if(board[i][j] * side != 5 && board[i][j] * side * -1 < 0) kingmap[i][j] = -1;
@@ -147,21 +164,27 @@ int printCell(int val){
 	return 0;
 }
 
-bool checkMove(string command, int side = 1){
+bool checkMove(string command, bool isPlayer1){
 	if(command.length() != 6) return false;
 	
+	int side;
 	int r1 = 7 - (command[1] - '0' - 1);
 	int c1 = abs(command[0] - 'A');
 	int r2 = 7 - (command[5] - '0' - 1);
 	int c2 = abs(command[4] - 'A');
 	
-	//cout << "|" << r1 << "." << c1 << "\\" << "|" << r2 << "." << c2 << "\\" << "\n";
+	if(isPlayer1){
+		side = 1;
+	}else{
+		side = -1;
+	}
 	
 	if(r1 == r2 && c1 == c2) return false;
 	if(abs(board[r2][c2]) == 5) return false;
 	if(c2 > 7 || c2 < 0 || c1 > 7 || c1 < 0 || r2 > 7 || r2 < 0 || r1 > 7 || r1 < 0) return false;
+	//if(board[r1][c1] * side != 1) return false;
 	
-	switch(board[r1][c1] * side){
+	switch(board[r1][c1]){
 		case 1: /*♖*/ 
 		if((r1 == r2 && c1 != c2) || (c1 == c2 && r1 != r2)){
 			if(c2 == c1){
@@ -252,14 +275,16 @@ bool checkMove(string command, int side = 1){
 				return true;
 			}
 		
+		////////////////////////////////////////////////////////////////
 		case 0: return false;
+		////////////////////////////////////////////////////////////////
 	}
 	
 	return false;
 }
 
 int PrintBoard(){
-	system("clear");
+	//system("clear");
 	for(int i = 0; i < 8; i++){
 		cout << 8 - i << " ";
 		for(int j = 0; j < 8; j++){
@@ -271,9 +296,11 @@ int PrintBoard(){
 	return 0;
 }
 
-string pause() {
+string pause(bool isPlayer1, bool recursive = false) {
+	//Player 1 = 1
+	//Player 2 = -1
     cin.clear();
-    cout << endl << "Last move: ";
+    if(!recursive) cout << endl << "Last move: ";
     string command;
     getline(cin, command);
     string command_display = command;
@@ -282,20 +309,31 @@ string pause() {
 	for_each(command.begin(), command.end(), [](char & c){
 		c = ::toupper(c);
 	});
-	checkMove(command);
 	
-	return command_display;
+	if(checkMove(command, isPlayer1)){
+		return command_display;
+	}else{
+		return pause(isPlayer1, true);
+	}
+	
 }
 
 int main(){
 	ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+	bool player1Turn = true;
+
 	cout << "Example command: A7 -> A5 \n";
+	cout << "TURN: " << (player1Turn ? "Player 1\n" : "Player 2\n");
+	player1Turn = !player1Turn;
+	
 	while(true){
 		PrintBoard();
 		cout << "Command: ";
-		string command = pause();
+		string command = pause(true);
 		cout << command << "\n";
+		cout << "TURN: " << (player1Turn ? "Player 1\n" : "Player 2\n");
+		player1Turn = !player1Turn;
 	}
 
 	return 0;
