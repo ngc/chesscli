@@ -38,9 +38,10 @@ int board[8][8] = {
 	0, 0, 0, 0, 5, 0, 0, 0,
 };*/
 
-int kingmap[8][8];
+int kingmap1[8][8];
+int kingmap2[8][8];
 
-void paintmap(int rd, int cd, int r, int c){
+void paintmap(int rd, int cd, int r, int c, int side){
 	/**Takes two arguments for direction and location and marks kingmap**/
 	r += rd;
 	c += cd;
@@ -49,13 +50,15 @@ void paintmap(int rd, int cd, int r, int c){
 	if(r > 7 || r < 0) return;
 	if(c > 7 || c < 0) return;
 	
-	kingmap[r][c] = -1;
+	if(side == 1) kingmap1[r][c] = -1;
+	if(side == -1) kingmap2[r][c] = -1;
+	
 	if(board[r][c] != 0) return;
 	if(rd == 0 && cd == 0) return;
-	paintmap(rd, cd, r, c);
+	paintmap(rd, cd, r, c, side);
 }
 
-void generateKingmap(int side){
+void generateKingmap(int side, int kingmap[8][8]){
 	/** Generates map of places where the king can move on the board */
 	memset(kingmap, 0, sizeof(kingmap[0][0]) * 8 * 8);
 	
@@ -76,10 +79,10 @@ void generateKingmap(int side){
 		for(int j = 0; j < 8; j++){
 			switch(board[i][j] * side * -1){
 			case 1: /*♖*/
-				paintmap(-1, 0, i, j);
-				paintmap(1, 0, i, j);
-				paintmap(0, 1, i, j);
-				paintmap(0, -1, i, j);
+				paintmap(-1, 0, i, j, side);
+				paintmap(1, 0, i, j, side);
+				paintmap(0, 1, i, j, side);
+				paintmap(0, -1, i, j, side);
 				break;
 				
 			case 2:/*♘︎*/
@@ -92,38 +95,38 @@ void generateKingmap(int side){
 				break;
 			
 			case 3:/*♗︎*/
-				paintmap(-1, -1, i, j);
-				paintmap(1, -1, i, j);
-				paintmap(-1, 1, i, j);
-				paintmap(1, 1, i, j);
+				paintmap(-1, -1, i, j, side);
+				paintmap(1, -1, i, j, side);
+				paintmap(-1, 1, i, j, side);
+				paintmap(1, 1, i, j, side);
 				break;
 			
 			case 4:/*♕*/
-				paintmap(-1, -1, i, j);
-				paintmap(1, -1, i, j);
-				paintmap(-1, 1, i, j);
-				paintmap(1, 1, i, j);
+				paintmap(-1, -1, i, j, side);
+				paintmap(1, -1, i, j, side);
+				paintmap(-1, 1, i, j, side);
+				paintmap(1, 1, i, j, side);
 				
-				paintmap(-1, 0, i, j);
-				paintmap(1, 0, i, j);
-				paintmap(0, 1, i, j);
-				paintmap(0, -1, i, j);
+				paintmap(-1, 0, i, j, side);
+				paintmap(1, 0, i, j, side);
+				paintmap(0, 1, i, j, side);
+				paintmap(0, -1, i, j, side);
 				break;
 			
 			case 5:/*♔*/
-				paintmap(0, 0, i + 1, j + 1);
-				paintmap(0, 0, i - 1, j - 1);
-				paintmap(0, 0, i - 1, j + 1);
-				paintmap(0, 0, i + 1, j - 1);
-				paintmap(0, 0, i + 1, j);
-				paintmap(0, 0, i - 1, j);
-				paintmap(0, 0, i, j + 1);
-				paintmap(0, 0, i, j - 1);
+				paintmap(0, 0, i + 1, j + 1, side);
+				paintmap(0, 0, i - 1, j - 1, side);
+				paintmap(0, 0, i - 1, j + 1, side);
+				paintmap(0, 0, i + 1, j - 1, side);
+				paintmap(0, 0, i + 1, j, side);
+				paintmap(0, 0, i - 1, j, side);
+				paintmap(0, 0, i, j + 1, side);
+				paintmap(0, 0, i, j - 1, side);
 				break;
 			
 			case 6:/*♙*/
-				paintmap(0, 0, i + side, j + side);
-				paintmap(0, 0, i + side, j + side * -1);
+				paintmap(0, 0, i + side, j + side, side);
+				paintmap(0, 0, i + side, j + side * -1, side);
 				break;
 		}
 		
@@ -182,7 +185,8 @@ bool checkMove(string command, bool isPlayer1){
 	if(r1 == r2 && c1 == c2) return false;
 	if(abs(board[r2][c2]) == 5) return false;
 	if(c2 > 7 || c2 < 0 || c1 > 7 || c1 < 0 || r2 > 7 || r2 < 0 || r1 > 7 || r1 < 0) return false;
-	//if(board[r1][c1] * side != 1) return false;
+	cout << "[" << board[r1][c1] * side << "]\n";
+	if((board[r1][c1] * side) < 0) return false;
 	
 	switch(board[r1][c1]){
 		case 1: /*♖*/ 
@@ -249,8 +253,8 @@ bool checkMove(string command, bool isPlayer1){
 		}
 	
 		case 5: /*♔*/
-			generateKingmap(side);
-			if(abs(r2 - r1) <= 1 && abs(c2 - c1) <= 1 && kingmap[r2][c2] == 0){
+			generateKingmap(side, kingmap1);
+			if(abs(r2 - r1) <= 1 && abs(c2 - c1) <= 1 && kingmap1[r2][c2] == 0){
 				board[r1][c1] = 0;
 				board[r2][c2] = 5;
 				return true;	
@@ -278,13 +282,104 @@ bool checkMove(string command, bool isPlayer1){
 		////////////////////////////////////////////////////////////////
 		case 0: return false;
 		////////////////////////////////////////////////////////////////
+		
+		case -1: /*♖*/
+			if ((r1 == r2 && c1 != c2) || (c1 == c2 && r1 != r2)) {
+				if (c2 == c1) {
+					for (int j = 1; j < abs(r2 - r1); j++) {
+						int cur = j * (((r1 > r2) * -1) + (r1 < r2));
+						if (board[r1 + cur][c1] != 0) return false;
+					}
+				} else {
+					for (int j = 1; j < abs(c2 - c1); j++) {
+						int cur = j * (((c1 > c2) * -1) + (c1 < c2));
+						if (board[r1][c1 + cur] != 0) return false;
+					}
+				}
+				board[r1][c1] = 0;
+				board[r2][c2] = -1;
+				return true;
+			}
+
+		case -2: /*♘*/
+		if (abs(r2 - r1) == 1 && abs(c2 - c1) != 2) return false;
+		if (abs(r2 - r1) == 2 && abs(c2 - c1) != 1) return false;
+
+		board[r1][c1] = 0;
+		board[r2][c2] = -2;
+		return true;
+
+		case -3: /*♗*/
+			if (abs(r2 - r1) == abs(c2 - c1) && (board[r2][c2] / side) <= 0) {
+				for (int i = 1; i < abs(c2 - c1); i++) {
+					if (board[r1 + (i * (((r1 > r2) * -1) + (r1 < r2)))][c1 + (i * (((c1 > c2) * -1) + (c1 < c2)))] != 0) return false;
+				}
+
+				board[r1][c1] = 0;
+				board[r2][c2] = -3;
+				return true;
+			}
+
+		case -4: /*♕*/
+			if ((r1 == r2 && c1 != c2) || (c1 == c2 && r1 != r2)) {
+				if (c2 == c1) {
+					for (int j = 1; j < abs(r2 - r1); j++) {
+						int cur = j * (((r1 > r2) * -1) + (r1 < r2));
+						if (board[r1 + cur][c1] != 0) return false;
+					}
+				} else {
+					for (int j = 1; j < abs(c2 - c1); j++) {
+						int cur = j * (((c1 > c2) * -1) + (c1 < c2));
+						if (board[r1][c1 + cur] != 0) return false;
+					}
+				}
+				board[r1][c1] = 0;
+				board[r2][c2] = -4;
+				return true;
+
+			} else if (abs(r2 - r1) == abs(c2 - c1) && (board[r2][c2] / side) <= 0) {
+			for (int i = 1; i < abs(c2 - c1); i++) {
+				if (board[r1 + (i * (((r1 > r2) * -1) + (r1 < r2)))][c1 + (i * (((c1 > c2) * -1) + (c1 < c2)))] != 0) return false;
+			}
+			board[r1][c1] = 0;
+			board[r2][c2] = -4;
+			return true;
+		}
+
+		case -5: /*♔*/
+			generateKingmap(side, kingmap2);
+		if (abs(r2 - r1) <= 1 && abs(c2 - c1) <= 1 && kingmap2[r2][c2] == 0) {
+			board[r1][c1] = 0;
+			board[r2][c2] = -5;
+			return true;
+		} else {
+			return false;
+		}
+
+		case -6: /*♙ PAWN: Check if on players initial row, if so then permit a movement of 2 if not permit a movement of 1*/
+			if (c2 == c1) {
+				if (r2 - r1 == 1 && board[r2][c2] == 0) {
+					board[r1][c1] = 0;
+					board[r2][c2] = -6;
+					return true;
+				} else if (r1 == 1 && r2 - r1 == 2 && board[r2][c2] == 0 && board[r2 + 1][c2] == 0) {
+					board[r1][c1] = 0;
+					board[r2][c2] = -6;
+					return true;
+				}
+			} else if (abs(c2 - c1) == 1 && r2 - r1 == 1 && (board[r2][c2] / side) < 0) {
+			board[r1][c1] = 0;
+			board[r2][c2] = -6;
+			return true;
+		}
+		
 	}
 	
 	return false;
 }
 
 int PrintBoard(){
-	//system("clear");
+	system("clear");
 	for(int i = 0; i < 8; i++){
 		cout << 8 - i << " ";
 		for(int j = 0; j < 8; j++){
@@ -325,15 +420,14 @@ int main(){
 
 	cout << "Example command: A7 -> A5 \n";
 	cout << "TURN: " << (player1Turn ? "Player 1\n" : "Player 2\n");
-	player1Turn = !player1Turn;
 	
 	while(true){
 		PrintBoard();
 		cout << "Command: ";
-		string command = pause(true);
+		string command = pause(player1Turn);
+		player1Turn = !player1Turn;
 		cout << command << "\n";
 		cout << "TURN: " << (player1Turn ? "Player 1\n" : "Player 2\n");
-		player1Turn = !player1Turn;
 	}
 
 	return 0;
