@@ -16,27 +16,27 @@ typedef queue<char> qc;
 typedef stack<int> si;
 typedef stack<char> sc;
 
-int board[8][8] = {
-	-1, -2, -3, -4, -5, -3, -2, -1,
-	-6, -6, -6, -6, -6, -6, -6, -6,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	6, 6, 6, 6, 6, 6, 6, 6,
-	1, 2, 3, 4, 5, 3, 2, 1,
-};
-
 /*int board[8][8] = {
+	-1, -2, -3, -4, -5, -3, -2, -1,
+	-6, -6, -6, -6, 0, -6, -6, -6,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, -3, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 5, 0, 0, 0,
+	6, 6, 6, 6, 0, 6, 6, 6,
+	1, 2, 3, 4, 5, 3, 2, 1,
 };*/
+
+int board[8][8] = {
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, -1, 0, 0, 6, 5, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+};
 
 int kingmap1[8][8];
 int kingmap2[8][8];
@@ -58,7 +58,7 @@ void paintmap(int rd, int cd, int r, int c, int side){
 	paintmap(rd, cd, r, c, side);
 }
 
-void generateKingmap(int side, int kingmap[8][8]){
+bool generateKingmap(int side, int kingmap[8][8]){
 	/** Generates map of places where the king can move on the board */
 	memset(kingmap, 0, sizeof(kingmap[0][0]) * 8 * 8);
 	
@@ -74,6 +74,8 @@ void generateKingmap(int side, int kingmap[8][8]){
 		{-2, -1, 1, 2, 2, 1, -1, -2},
 		{-1, -2, -2, -1, 1, 2, 2, 1}
 	};
+	
+	pii kingLoc = pii(2, 2);
 	
 	for(int i = 0; i < 8; i++){
 		for(int j = 0; j < 8; j++){
@@ -130,11 +132,10 @@ void generateKingmap(int side, int kingmap[8][8]){
 				break;
 		}
 		
-		if(board[i][j] * side != 5 && board[i][j] * side * -1 < 0) kingmap[i][j] = -1;
-		
+		if(board[i][j] * side == 5) kingLoc = pii(i, j);
+		if(board[i][j] * side != 5 && board[i][j] * side > 0) kingmap[i][j] = -1;
 	}
   }
-  
 	cout << "\n";
   	for(int i = 0; i < 8; i++){
 		cout << 8 - i << " ";
@@ -143,6 +144,34 @@ void generateKingmap(int side, int kingmap[8][8]){
 		}
 		cout << "\n";
 	}
+	cout << "[" << (kingmap[kingLoc.first][kingLoc.second] == -1 ? "True" : "False") << "]\n";
+	cout << "[" << kingLoc.first << ", " << kingLoc.second << "]\n";
+	return kingmap[kingLoc.first][kingLoc.second] == -1;
+}
+
+bool validateMove(int r1, int r2, int c1, int c2, int piece){
+	int side;
+	if(piece > 0) side = 1;
+	if(piece < 0) side = -1;
+	
+	int tempPiece = board[r2][c2];
+	board[r1][c1] = 0;
+	board[r2][c2] = piece;
+	
+	if(side == 1){
+		if(generateKingmap(side, kingmap1)){
+			board[r1][c1] = piece;
+			board[r2][c2] = tempPiece;
+			return false;
+		}
+	}else{
+		if(generateKingmap(side, kingmap2)){
+			board[r1][c1] = piece;
+			board[r2][c2] = tempPiece;
+			return false;
+		}
+	}
+	return true;
 }
 
 int printCell(int val){
@@ -202,18 +231,14 @@ bool checkMove(string command, bool isPlayer1){
 					if(board[r1][c1 + cur] != 0) return false;
 				}	
 			}
-			board[r1][c1] = 0;
-			board[r2][c2] = 1;
-			return true;
+			return validateMove(r1, r2, c1, c2, 1);
 		}
 		
 		case 2: /*♘*/			
 			if(abs(r2 - r1) == 1 && abs(c2 - c1) != 2) return false;
 			if(abs(r2 - r1) == 2 && abs(c2 - c1) != 1) return false;
 			
-			board[r1][c1] = 0;
-			board[r2][c2] = 2;
-			return true;
+			return validateMove(r1, r2, c1, c2, 2);
 		
 		case 3: /*♗*/
 			if(abs(r2 - r1) == abs(c2 - c1) && (board[r2][c2] / side) <= 0){
@@ -221,9 +246,7 @@ bool checkMove(string command, bool isPlayer1){
 					if(board[r1 + (i * (((r1 > r2) * -1) + (r1 < r2)))][c1 + (i * (((c1 > c2) * -1) + (c1 < c2)))] != 0) return false;
 				}
 			
-				board[r1][c1] = 0;
-				board[r2][c2] = 3;
-				return true;
+				return validateMove(r1, r2, c1, c2, 3);
 			}
 			
 		case 4:/*♕*/
@@ -239,25 +262,19 @@ bool checkMove(string command, bool isPlayer1){
 					if(board[r1][c1 + cur] != 0) return false;
 				}	
 			}
-			board[r1][c1] = 0;
-			board[r2][c2] = 4;
-			return true;
+			return validateMove(r1, r2, c1, c2, 4);
 			
 		}else if(abs(r2 - r1) == abs(c2 - c1) && (board[r2][c2] / side) <= 0){
 			for(int i = 1; i < abs(c2 - c1); i++){
 				if(board[r1 + (i * (((r1 > r2) * -1) + (r1 < r2)))][c1 + (i * (((c1 > c2) * -1) + (c1 < c2)))] != 0) return false;
 			}
-			board[r1][c1] = 0;
-			board[r2][c2] = 4;
-			return true;
+			return validateMove(r1, r2, c1, c2, 4);
 		}
 	
 		case 5: /*♔*/
 			generateKingmap(side, kingmap1);
 			if(abs(r2 - r1) <= 1 && abs(c2 - c1) <= 1 && kingmap1[r2][c2] == 0){
-				board[r1][c1] = 0;
-				board[r2][c2] = 5;
-				return true;	
+				return validateMove(r1, r2, c1, c2, 5);
 			}else{
 				return false;
 			}
@@ -265,18 +282,12 @@ bool checkMove(string command, bool isPlayer1){
 		case 6: /*♙ PAWN: Check if on players initial row, if so then permit a movement of 2 if not permit a movement of 1*/
 			if(c2 == c1){
 				if(r2 - r1 == -1 && board[r2][c2] == 0){
-					board[r1][c1] = 0;
-					board[r2][c2] = 6;
-					return true;
+					return validateMove(r1, r2, c1, c2, 6);
 				}else if(r1 == 6 && r2 - r1 == -2 && board[r2][c2] == 0 && board[r2 + 1][c2] == 0){
-					board[r1][c1] = 0;
-					board[r2][c2] = 6;
-					return true;
+					return validateMove(r1, r2, c1, c2, 6);
 				}
 			}else if(abs(c2 - c1) == 1 && r2 - r1 == -1 && (board[r2][c2] / side) < 0){
-				board[r1][c1] = 0;
-				board[r2][c2] = 6;
-				return true;
+					return validateMove(r1, r2, c1, c2, 1);
 			}
 		
 		////////////////////////////////////////////////////////////////
