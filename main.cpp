@@ -18,10 +18,10 @@ typedef stack<char> sc;
 
 int board[8][8] = {
 	-1, -2, -3, -4, -5, -3, -2, -1,
-	0, -6, -6, -6, -6, -6, -6, -6,
+	-6, -6, -6, -6, -6, -6, -6, -6,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, -3, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	6, 6, 6, 6, 0, 6, 6, 6,
 	1, 2, 3, 4, 5, 3, 2, 1,
@@ -40,6 +40,7 @@ void paintmap(int rd, int cd, int r, int c){
 	
 	if(board[r][c] != 0) return;
 	kingmap[r][c] = -1;
+	if(rd == 0 && cd == 0) return;
 	paintmap(rd, cd, r, c);
 }
 
@@ -66,8 +67,8 @@ void generateKingmap(int side){
 			case 1: /*♖*/
 				paintmap(-1, 0, i, j);
 				paintmap(1, 0, i, j);
-				paintmap(-1, 0, i, j);
 				paintmap(0, 1, i, j);
+				paintmap(0, -1, i, j);
 				
 			case 2:/*♘︎*/
 				for(int f = 0; f < 8; f++){
@@ -83,7 +84,7 @@ void generateKingmap(int side){
 				paintmap(-1, 1, i, j);
 				paintmap(1, 1, i, j);
 			
-			case 4: cout << "♕︎"; break;
+			case 4:/*♕*/
 				paintmap(-1, -1, i, j);
 				paintmap(1, -1, i, j);
 				paintmap(-1, 1, i, j);
@@ -91,16 +92,25 @@ void generateKingmap(int side){
 				
 				paintmap(-1, 0, i, j);
 				paintmap(1, 0, i, j);
-				paintmap(-1, 0, i, j);
 				paintmap(0, 1, i, j);
+				paintmap(0, -1, i, j);
 			
-			case 5: cout << "♔"; break;
-				
+			case 5:/*♔*/
+				paintmap(0, 0, i + 1, j + 1);
+				paintmap(0, 0, i - 1, j - 1);
+				paintmap(0, 0, i - 1, j + 1);
+				paintmap(0, 0, i + 1, j - 1);
+				paintmap(0, 0, i + 1, j);
+				paintmap(0, 0, i - 1, j);
+				paintmap(0, 0, i, j + 1);
+				paintmap(0, 0, i, j - 1);
 			
-			case 6: cout << "♙"; break;
+			case 6:/*♙*/
+				paintmap(0, 0, i + side, j + side);
+				paintmap(0, 0, i + side, j + side * -1);
 		}
 		
-		if(board[i][j] * side * -1 < 0) kingmap[i][j] = -1;
+		if(board[i][j] * side != 5 && board[i][j] * side * -1 < 0) kingmap[i][j] = -1;
 		
 	}
   }
@@ -109,7 +119,7 @@ void generateKingmap(int side){
   	for(int i = 0; i < 8; i++){
 		cout << 8 - i << " ";
 		for(int j = 0; j < 8; j++){
-			cout << kingmap[i][j] << " ";
+			cout << (kingmap[i][j] == -1 ? 'X' : 'O') << " ";
 		}
 		cout << "\n";
 	}
@@ -217,7 +227,7 @@ bool checkMove(string command, int side = 1){
 	
 		case 5: /*♔*/
 			generateKingmap(side);
-			if(abs(r2 - r1) <= 1 && abs(c2 - c1) <= 1){
+			if(abs(r2 - r1) <= 1 && abs(c2 - c1) <= 1 && kingmap[r2][c2] == 0){
 				board[r1][c1] = 0;
 				board[r2][c2] = 5;
 				return true;	
