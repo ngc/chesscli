@@ -19,7 +19,7 @@ typedef stack<char> sc;
 pii KingPosP1 = pii(0, 0);
 pii KingPosP2 = pii(0, 0);
 
-int board[8][8] = {
+/*int board[8][8] = {
 	-1, -2, -3, -4, -5, -3, -2, -1,
 	-6, -6, -6, -6, -6, -6, -6, -6,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -28,24 +28,25 @@ int board[8][8] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	6, 6, 6, 6, 6, 6, 6, 6,
 	1, 2, 3, 4, 5, 3, 2, 1,
-};
-
-/*int board[8][8] = {
-	-1, 0, 0, 5, -1, 0, 0, 0,
-	6, 6, 6, 6, 6, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
 };*/
+
+int board[8][8] = {
+	-1, 0, 0, 5, 0, 0, 0, 0,
+	6, 6, 6, 6, 6, -1, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+};
 
 int kingmap1[8][8];
 int kingmap2[8][8];
 
 void paintmap(int rd, int cd, int r, int c, int side){
 	/**Takes two arguments for direction and location and marks kingmap**/
+	
 	r += rd;
 	c += cd;
 	//cout << r << " " << c << " | "<< rd << " " << cd << "\n";
@@ -151,6 +152,38 @@ bool generateKingmap(int side, int kingmap[8][8]){
 	else {return kingmap[KingPosP2.first][KingPosP2.second] < 0;}
 }
 
+bool swapCheck(int rd, int cd, int r, int c, int piece){
+	/**Takes two arguments for direction and location and marks kingmap**/
+	
+	int side;
+	board[r][c] = 0;
+	r += rd;
+	c += cd;
+	if(piece > 0) side = 1;
+	if(piece < 0) side = -1;
+	//cout << r << " " << c << " | "<< rd << " " << cd << "\n";
+	
+	if(r > 7 || r < 0) return false;
+	if(c > 7 || c < 0) return false;
+	if(board[r][c] != 0) return false;
+	if(rd == 0 && cd == 0) return false;
+	
+	board[r][c] = piece;
+	if(side == 1){
+		if(!generateKingmap(1, kingmap1)){ 
+			board[r][c] = 0;
+			return true;
+		}
+	}else{
+		if(!generateKingmap(-1, kingmap2)){
+			board[r][c] = 0;
+			return true;
+		}
+	}
+	
+	return swapCheck(rd, cd, r, c, piece);
+}
+
 bool validateMove(int r1, int r2, int c1, int c2, int piece){
 	int side;
 	if(piece > 0) side = 1;
@@ -177,7 +210,11 @@ bool validateMove(int r1, int r2, int c1, int c2, int piece){
 }
 
 bool isMate(bool isPlayer1){
+	
+	int side;
+	
 	if(isPlayer1){
+		side = 1;
 		if(!generateKingmap(1, kingmap1)) return false;
 		if(kingmap1[KingPosP1.first][KingPosP1.second] <= -2){
 			for(int i = KingPosP1.first - 1; i < KingPosP1.first + 2; i++){
@@ -190,9 +227,73 @@ bool isMate(bool isPlayer1){
 			return true;
 		}else{
 			
+	int r, c;
+	int knight_values[2][8] = {
+		{-2, -1, 1, 2, 2, 1, -1, -2},
+		{-1, -2, -2, -1, 1, 2, 2, 1}
+	};
+	
+	for(int i = 0; i < 8; i++){
+		for(int j = 0; j < 8; j++){
+			switch(board[i][j] * side){
+			case 1: /*♖*/
+				if(swapCheck(-1, 0, i, j, side) || swapCheck(1, 0, i, j, side) || swapCheck(0, 1, i, j, side) || swapCheck(0, -1, i, j, side)){
+					board[i][j] = 1;
+					return false;
+				}
+				break;
+				
+			case 2:/*♘︎*/
+				for(int f = 0; f < 8; f++){
+					r = i + knight_values[0][f];
+					c = j + knight_values[1][f];
+					if(r < 0 || r > 7 || c < 0 || c > 7 || board[r][c] * side == 1) continue;
+					int oldPiece = board[r][c];
+					board[r][c] = 2;
+					board[i][j] = 0;
+					if(!generateKingmap(1, kingmap1)) return false;
+					kingmap1[r][c] = oldPiece;
+					board[i][j] = 2;
+				}
+				break;
+			
+			case 3:/*♗︎*/
+				if(swapCheck(-1, -1, i, j, side) || swapCheck(1, -1, i, j, side) || swapCheck(-1, 1, i, j, side) || swapCheck(1, 1, i, j, side)){
+					board[i][j] = 3;
+					return false;
+				}
+				break;
+				
+			
+			case 4:/*♕*/
+				if(swapCheck(-1, -1, i, j, side) || swapCheck(1, -1, i, j, side) || swapCheck(-1, 1, i, j, side) || swapCheck(1, 1, i, j, side) || swapCheck(-1, 0, i, j, side) || swapCheck(1, 0, i, j, side) || swapCheck(0, 1, i, j, side) || swapCheck(0, -1, i, j, side)){
+					board[i][j] = 3;
+					return false;
+				}
+				break;
+				
+			case 5:/*♔*/
+				if(swapCheck(0, 0, i + 1, j + 1, side) || swapCheck(0, 0, i + 1, j + 1, side) || swapCheck(0, 0, i - 1, j - 1, side) || swapCheck(0, 0, i - 1, j + 1, side) || swapCheck(0, 0, i + 1, j - 1, side) || swapCheck(0, 0, i + 1, j, side) || swapCheck(0, 0, i - 1, j, side) || swapCheck(0, 0, i, j + 1, side) || swapCheck(0, 0, i, j - 1, side)){
+					board[i][j] = 5;
+					return false;
+				}
+				break;
+			
+			case 6:/*♙*/
+				if(swapCheck(0, 0, i + side, j + side, side) || swapCheck(0, 0, i + side, j + side * -1, side)){
+					board[i][j] = 6;
+					return false;
+				}
+				break;
+		}
+			
 		}
 	}
 	return false;
+ }
+ 
+ }
+ return false;
 }
 
 int printCell(int val){
