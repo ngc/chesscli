@@ -16,18 +16,18 @@ typedef queue<char> qc;
 typedef stack<int> si;
 typedef stack<char> sc;
 
-/*int board[8][8] = {
-	-1, -2, -3, -4, -5, -3, -2, -1,
-	-6, -6, -6, -6, 0, -6, -6, -6,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	6, 6, 6, 6, 0, 6, 6, 6,
-	1, 2, 3, 4, 5, 3, 2, 1,
-};*/
-
 int board[8][8] = {
+	-1, -2, -3, -4, -5, -3, -2, -1,
+	-6, -6, -6, -6, -6, -6, -6, -6,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	6, 6, 6, 6, 6, 6, 6, 6,
+	1, 2, 3, 4, 5, 3, 2, 1,
+};
+
+/*int board[8][8] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -36,7 +36,7 @@ int board[8][8] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
-};
+};*/
 
 int kingmap1[8][8];
 int kingmap2[8][8];
@@ -45,13 +45,13 @@ void paintmap(int rd, int cd, int r, int c, int side){
 	/**Takes two arguments for direction and location and marks kingmap**/
 	r += rd;
 	c += cd;
-	cout << r << " " << c << " | "<< rd << " " << cd << "\n";
+	//cout << r << " " << c << " | "<< rd << " " << cd << "\n";
 	
 	if(r > 7 || r < 0) return;
 	if(c > 7 || c < 0) return;
 	
-	if(side == 1) kingmap1[r][c] = -1;
-	if(side == -1) kingmap2[r][c] = -1;
+	if(side == 1) kingmap1[r][c] -= 1;
+	if(side == -1) kingmap2[r][c] -= 1;
 	
 	if(board[r][c] != 0) return;
 	if(rd == 0 && cd == 0) return;
@@ -133,20 +133,21 @@ bool generateKingmap(int side, int kingmap[8][8]){
 		}
 		
 		if(board[i][j] * side == 5) kingLoc = pii(i, j);
-		if(board[i][j] * side != 5 && board[i][j] * side > 0) kingmap[i][j] = -1;
+		if(board[i][j] * side != 5 && board[i][j] * side > 0) kingmap[i][j] -= 1;
 	}
   }
+  
 	cout << "\n";
   	for(int i = 0; i < 8; i++){
 		cout << 8 - i << " ";
 		for(int j = 0; j < 8; j++){
-			cout << (kingmap[i][j] == -1 ? 'X' : 'O') << " ";
+			cout << (kingmap[i][j] < 0 ? (abs(kingmap[i][j])) : 'O') << " ";
 		}
 		cout << "\n";
 	}
 	cout << "[" << (kingmap[kingLoc.first][kingLoc.second] == -1 ? "True" : "False") << "]\n";
 	cout << "[" << kingLoc.first << ", " << kingLoc.second << "]\n";
-	return kingmap[kingLoc.first][kingLoc.second] == -1;
+	return kingmap[kingLoc.first][kingLoc.second] < 0;
 }
 
 bool validateMove(int r1, int r2, int c1, int c2, int piece){
@@ -307,18 +308,14 @@ bool checkMove(string command, bool isPlayer1){
 						if (board[r1][c1 + cur] != 0) return false;
 					}
 				}
-				board[r1][c1] = 0;
-				board[r2][c2] = -1;
-				return true;
+				return validateMove(r1, r2, c1, c2, -1);
 			}
 
 		case -2: /*♘*/
 		if (abs(r2 - r1) == 1 && abs(c2 - c1) != 2) return false;
 		if (abs(r2 - r1) == 2 && abs(c2 - c1) != 1) return false;
 
-		board[r1][c1] = 0;
-		board[r2][c2] = -2;
-		return true;
+		return validateMove(r1, r2, c1, c2, -2);
 
 		case -3: /*♗*/
 			if (abs(r2 - r1) == abs(c2 - c1) && (board[r2][c2] / side) <= 0) {
@@ -326,9 +323,7 @@ bool checkMove(string command, bool isPlayer1){
 					if (board[r1 + (i * (((r1 > r2) * -1) + (r1 < r2)))][c1 + (i * (((c1 > c2) * -1) + (c1 < c2)))] != 0) return false;
 				}
 
-				board[r1][c1] = 0;
-				board[r2][c2] = -3;
-				return true;
+				return validateMove(r1, r2, c1, c2, -3);
 			}
 
 		case -4: /*♕*/
@@ -344,25 +339,19 @@ bool checkMove(string command, bool isPlayer1){
 						if (board[r1][c1 + cur] != 0) return false;
 					}
 				}
-				board[r1][c1] = 0;
-				board[r2][c2] = -4;
-				return true;
+				 return validateMove(r1, r2, c1, c2, -4);
 
 			} else if (abs(r2 - r1) == abs(c2 - c1) && (board[r2][c2] / side) <= 0) {
 			for (int i = 1; i < abs(c2 - c1); i++) {
 				if (board[r1 + (i * (((r1 > r2) * -1) + (r1 < r2)))][c1 + (i * (((c1 > c2) * -1) + (c1 < c2)))] != 0) return false;
 			}
-			board[r1][c1] = 0;
-			board[r2][c2] = -4;
-			return true;
+			 return validateMove(r1, r2, c1, c2, -4);
 		}
 
 		case -5: /*♔*/
 			generateKingmap(side, kingmap2);
 		if (abs(r2 - r1) <= 1 && abs(c2 - c1) <= 1 && kingmap2[r2][c2] == 0) {
-			board[r1][c1] = 0;
-			board[r2][c2] = -5;
-			return true;
+			return validateMove(r1, r2, c1, c2, -5);
 		} else {
 			return false;
 		}
