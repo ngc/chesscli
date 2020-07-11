@@ -16,6 +16,9 @@ typedef queue<char> qc;
 typedef stack<int> si;
 typedef stack<char> sc;
 
+pii KingPosP1 = pii(0, 0);
+pii KingPosP2 = pii(0, 0);
+
 int board[8][8] = {
 	-1, -2, -3, -4, -5, -3, -2, -1,
 	-6, -6, -6, -6, -6, -6, -6, -6,
@@ -28,10 +31,10 @@ int board[8][8] = {
 };
 
 /*int board[8][8] = {
+	-1, 0, 0, 5, -1, 0, 0, 0,
+	6, 6, 6, 6, 6, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, -1, 0, 0, 6, 5, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -74,8 +77,6 @@ bool generateKingmap(int side, int kingmap[8][8]){
 		{-2, -1, 1, 2, 2, 1, -1, -2},
 		{-1, -2, -2, -1, 1, 2, 2, 1}
 	};
-	
-	pii kingLoc = pii(2, 2);
 	
 	for(int i = 0; i < 8; i++){
 		for(int j = 0; j < 8; j++){
@@ -132,8 +133,9 @@ bool generateKingmap(int side, int kingmap[8][8]){
 				break;
 		}
 		
-		if(board[i][j] * side == 5) kingLoc = pii(i, j);
-		if(board[i][j] * side != 5 && board[i][j] * side > 0) kingmap[i][j] -= 1;
+		if(board[i][j] == 5) KingPosP1 = pii(i, j);
+		if(board[i][j] == -5) KingPosP2 = pii(i, j);
+		if(board[i][j] * side != 5 && board[i][j] * side > 0 && kingmap[i][j] >= 0) kingmap[i][j] = -1;
 	}
   }
   
@@ -141,13 +143,12 @@ bool generateKingmap(int side, int kingmap[8][8]){
   	for(int i = 0; i < 8; i++){
 		cout << 8 - i << " ";
 		for(int j = 0; j < 8; j++){
-			cout << (kingmap[i][j] < 0 ? (abs(kingmap[i][j])) : 'O') << " ";
+			cout << abs(kingmap[i][j]) << " ";
 		}
 		cout << "\n";
 	}
-	cout << "[" << (kingmap[kingLoc.first][kingLoc.second] == -1 ? "True" : "False") << "]\n";
-	cout << "[" << kingLoc.first << ", " << kingLoc.second << "]\n";
-	return kingmap[kingLoc.first][kingLoc.second] < 0;
+	if(side == 1) {return kingmap[KingPosP1.first][KingPosP1.second] < 0;}
+	else {return kingmap[KingPosP2.first][KingPosP2.second] < 0;}
 }
 
 bool validateMove(int r1, int r2, int c1, int c2, int piece){
@@ -173,6 +174,25 @@ bool validateMove(int r1, int r2, int c1, int c2, int piece){
 		}
 	}
 	return true;
+}
+
+bool isMate(bool isPlayer1){
+	if(isPlayer1){
+		if(!generateKingmap(1, kingmap1)) return false;
+		if(kingmap1[KingPosP1.first][KingPosP1.second] <= -2){
+			for(int i = KingPosP1.first - 1; i < KingPosP1.first + 2; i++){
+				for(int j = KingPosP1.second - 1; j < KingPosP1.second + 2; j++){
+					cout << kingmap1[i][j] << " ";
+					if(i > 0 && i < 8 && j > 0 && j < 8 && kingmap1[i][j] == 0) return false;
+				}
+				cout << "\n";
+			}
+			return true;
+		}else{
+			
+		}
+	}
+	return false;
 }
 
 int printCell(int val){
@@ -359,18 +379,12 @@ bool checkMove(string command, bool isPlayer1){
 		case -6: /*♙ PAWN: Check if on players initial row, if so then permit a movement of 2 if not permit a movement of 1*/
 			if (c2 == c1) {
 				if (r2 - r1 == 1 && board[r2][c2] == 0) {
-					board[r1][c1] = 0;
-					board[r2][c2] = -6;
-					return true;
+					return validateMove(r1, r2, c1, c2, -6);
 				} else if (r1 == 1 && r2 - r1 == 2 && board[r2][c2] == 0 && board[r2 + 1][c2] == 0) {
-					board[r1][c1] = 0;
-					board[r2][c2] = -6;
-					return true;
+					return validateMove(r1, r2, c1, c2, -6);
 				}
 			} else if (abs(c2 - c1) == 1 && r2 - r1 == 1 && (board[r2][c2] / side) < 0) {
-			board[r1][c1] = 0;
-			board[r2][c2] = -6;
-			return true;
+			return validateMove(r1, r2, c1, c2, -6);
 		}
 		
 	}
@@ -424,6 +438,12 @@ int main(){
 	while(true){
 		PrintBoard();
 		cout << "Command: ";
+		//cout << (isMate(player1Turn) ? "True\n" : "False\n");
+		if(isMate(player1Turn)) {
+			cout << (player1Turn ? "Player 2 Wins.\n" : "Player 1 Wins.\n");
+			break;
+		}
+		
 		string command = pause(player1Turn);
 		player1Turn = !player1Turn;
 		cout << command << "\n";
