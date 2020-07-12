@@ -140,14 +140,6 @@ bool generateKingmap(int side, int kingmap[8][8]){
 		if(board[i][j] * side != 5 && board[i][j] * side > 0 && kingmap[i][j] >= 0) kingmap[i][j] = -1;
 	}
   }
-	cout << "\n";
-	for(int i = 0; i < 8; i++){
-		cout << i << " ";
-		for(int j = 0; j < 8; j++){
-			cout << abs(kingmap[i][j]) << " ";
-		}
-		cout << "\n";
-	}
   
 	if(side == 1) {return kingmap[KingPosP1.first][KingPosP1.second] < 0;}
 	else {return kingmap[KingPosP2.first][KingPosP2.second] < 0;}
@@ -324,12 +316,10 @@ bool isMate(bool isPlayer1){
 			for(int j = KingPosP1.second - 1; j < KingPosP1.second + 2; j++){
 				if(i > 0 && i < 8 && j > 0 && j < 8 && kingmap1[i][j] == 0) return false;
 			}
-			cout << "\n";
 		}
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
 				if(board[i][j] * side > 0){
-				cout << "CHECKING " << printCell(board[i][j]) << "\n";
 				vector<pii> possibleMoves = getMoves(i, j);
 				for(int f = 0; f < possibleMoves.size(); f++){
 					int r = possibleMoves[i].first;
@@ -347,7 +337,6 @@ bool isMate(bool isPlayer1){
 			for(int j = KingPosP2.second - 1; j < KingPosP2.second + 2; j++){
 				if(i > 0 && i < 8 && j > 0 && j < 8 && kingmap2[i][j] == 0) return false;
 			}
-			cout << "\n";
 		}
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
