@@ -3,6 +3,12 @@
 using namespace std; 
 typedef pair<int, int> pii;
 
+vector<pii> movementTemp;
+pii KingPosP1;
+pii KingPosP2;
+int kingmap1[8][8];
+int kingmap2[8][8];
+
 int board[8][8] = {
 	-1, -2, -3, -4, -5, -3, -2, -1,
 	-6, -6, -6, -6, -6, -6, -6, -6,
@@ -10,7 +16,7 @@ int board[8][8] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
+	6, 6, 6, 6, 6, 6, 6, 6,
 	1, 2, 3, 4, 5, 3, 2, 1,
 };
 
@@ -36,7 +42,142 @@ int printCell(int val){
 	return 0;
 }
 
-vector<pii> movementTemp;
+void paintmap(int rd, int cd, int r, int c, int side){
+	/**Takes two arguments for direction and location and marks kingmap**/
+	
+	r += rd;
+	c += cd;
+	//cout << r << " " << c << " | "<< rd << " " << cd << "\n";
+	
+	if(r > 7 || r < 0) return;
+	if(c > 7 || c < 0) return;
+	
+	if(side == 1) kingmap1[r][c] -= 1;
+	if(side == -1) kingmap2[r][c] -= 1;
+	
+	if(board[r][c] != 0) return;
+	if(rd == 0 && cd == 0) return;
+	paintmap(rd, cd, r, c, side);
+}
+
+bool generateKingmap(int side, int kingmap[8][8]){
+	/** Generates map of places where the king can move on the board */
+	memset(kingmap, 0, sizeof(kingmap[0][0]) * 8 * 8);
+	
+	/*
+	 * UP = -1
+	 * DOWN = 1
+	 * LEFT = -1
+	 * RIGHT = 1
+	 */
+	
+	int r, c;
+	int knight_values[2][8] = {
+		{-2, -1, 1, 2, 2, 1, -1, -2},
+		{-1, -2, -2, -1, 1, 2, 2, 1}
+	};
+	
+	for(int i = 0; i < 8; i++){
+		for(int j = 0; j < 8; j++){
+			switch(board[i][j] * side * -1){
+			case 1: /*♖*/
+				paintmap(-1, 0, i, j, side);
+				paintmap(1, 0, i, j, side);
+				paintmap(0, 1, i, j, side);
+				paintmap(0, -1, i, j, side);
+				break;
+				
+			case 2:/*♘︎*/
+				for(int f = 0; f < 8; f++){
+					r = i + knight_values[0][f];
+					c = j + knight_values[1][f];
+					if(r < 0 || r > 7 || c < 0 || c > 7) continue;
+					kingmap[r][c] = -1;
+				}
+				break;
+			
+			case 3:/*♗︎*/
+				paintmap(-1, -1, i, j, side);
+				paintmap(1, -1, i, j, side);
+				paintmap(-1, 1, i, j, side);
+				paintmap(1, 1, i, j, side);
+				break;
+			
+			case 4:/*♕*/
+				paintmap(-1, -1, i, j, side);
+				paintmap(1, -1, i, j, side);
+				paintmap(-1, 1, i, j, side);
+				paintmap(1, 1, i, j, side);
+				
+				paintmap(-1, 0, i, j, side);
+				paintmap(1, 0, i, j, side);
+				paintmap(0, 1, i, j, side);
+				paintmap(0, -1, i, j, side);
+				break;
+			
+			case 5:/*♔*/
+				paintmap(0, 0, i + 1, j + 1, side);
+				paintmap(0, 0, i - 1, j - 1, side);
+				paintmap(0, 0, i - 1, j + 1, side);
+				paintmap(0, 0, i + 1, j - 1, side);
+				paintmap(0, 0, i + 1, j, side);
+				paintmap(0, 0, i - 1, j, side);
+				paintmap(0, 0, i, j + 1, side);
+				paintmap(0, 0, i, j - 1, side);
+				break;
+			
+			case 6:/*♙*/
+				paintmap(0, 0, i + side, j + side, side);
+				paintmap(0, 0, i + side, j + side * -1, side);
+				break;
+		}
+		
+		if(board[i][j] == 5) KingPosP1 = pii(i, j);
+		if(board[i][j] == -5) KingPosP2 = pii(i, j);
+		if(board[i][j] * side != 5 && board[i][j] * side > 0 && kingmap[i][j] >= 0) kingmap[i][j] = -1;
+	}
+  }
+  
+	cout << "\n";
+  	for(int i = 0; i < 8; i++){
+		cout << 8 - i << " ";
+		for(int j = 0; j < 8; j++){
+			cout << abs(kingmap[i][j]) << " ";
+		}
+		cout << "\n";
+	}
+	if(side == 1) {return kingmap[KingPosP1.first][KingPosP1.second] < 0;}
+	else {return kingmap[KingPosP2.first][KingPosP2.second] < 0;}
+}
+
+bool validateMove(int r1, int r2, int c1, int c2, int piece, bool revert = false){
+	int side;
+	if(piece > 0) side = 1;
+	if(piece < 0) side = -1;
+	
+	int tempPiece = board[r2][c2];
+	board[r1][c1] = 0;
+	board[r2][c2] = piece;
+	
+	if(side == 1){
+		if(generateKingmap(side, kingmap1)){
+			board[r1][c1] = piece;
+			board[r2][c2] = tempPiece;
+			return false;
+		}
+	}else{
+		if(generateKingmap(side, kingmap2)){
+			board[r1][c1] = piece;
+			board[r2][c2] = tempPiece;
+			return false;
+		}
+	}
+	if(revert){
+		board[r1][c1] = piece;
+		board[r2][c2] = tempPiece;
+	}
+	return true;
+}
 
 void pieceMovement(int rd, int cd, int r, int c){
 	r += rd;
@@ -59,7 +200,7 @@ vector<pii> getMoves(int i, int j){
 	if(board[i][j] > 0) side = 1;
 	else side = -1;
 
-		switch(abs(board[i][j])){
+	switch(abs(board[i][j])){
 		case 1: /*♖*/
 			pieceMovement(-1, 0, i, j);
 			pieceMovement(1, 0, i, j);
@@ -107,8 +248,17 @@ vector<pii> getMoves(int i, int j){
 			break;
 		
 		case 6:/*♙*/
-			pieceMovement(0, 0, i + side, j + side);
-			pieceMovement(0, 0, i + side, j + side * -1);
+			if(side == 1){
+				if(i == 6) movementTemp.push_back(pii(i - 2, j));
+				if(board[i - 1][j + 1] < 0) movementTemp.push_back(pii(i - 1, j + 1));
+				if(board[i - 1][j - 1] < 0) movementTemp.push_back(pii(i - 1, j - 1));
+				if(board[i - 1][j] == 0) movementTemp.push_back(pii(i - 1, j));
+			}else{
+				if(i == 1) movementTemp.push_back(pii(i + 2, j));
+				if(board[i + 1][j + 1] > 0) movementTemp.push_back(pii(i + 1, j + 1));
+				if(board[i + 1][j - 1] > 0) movementTemp.push_back(pii(i + 1, j - 1));
+				if(board[i + 1][j] == 0) movementTemp.push_back(pii(i + 1, j));
+			}
 		break;
 	}
 	return movementTemp;
@@ -134,9 +284,7 @@ bool checkMove(string command, bool isPlayer1){
 	vector<pii> possibleMoves = getMoves(r1, c1);
 	for(int i = 0; i < possibleMoves.size(); i++){
 		if(possibleMoves[i].first == r2 && possibleMoves[i].second == c2){
-			board[r2][c2] = board[r1][c1];
-			board[r1][c1] = 0;
-			return true;
+			return validateMove(r1, r2, c1, c2, board[r1][c1]);
 		}
 	}
 	
