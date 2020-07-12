@@ -304,6 +304,60 @@ void PrintBoard(){
 	return;
 }
 
+bool isMate(bool isPlayer1){
+	//isPlayer1
+	int side;
+	
+	if(!generateKingmap(1, kingmap1)) return false;
+		
+	if(kingmap1[KingPosP1.first][KingPosP1.second] <= -2){
+		side = 1;
+		for(int i = KingPosP1.first - 1; i < KingPosP1.first + 2; i++){
+			for(int j = KingPosP1.second - 1; j < KingPosP1.second + 2; j++){
+				if(i > 0 && i < 8 && j > 0 && j < 8 && kingmap1[i][j] == 0) return false;
+			}
+			cout << "\n";
+		}
+		for(int i = 0; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				if(board[i][j] * side == 1){
+				vector<pii> possibleMoves = getMoves(i, j);
+				for(int f = 0; f < possibleMoves.size(); f++){
+					int r = possibleMoves[i].first;
+					int c = possibleMoves[i].second;
+					if(r < 8 && r >= 0 && c < 8 && c >= 0 && board[i][j] * side < 0 && validateMove(i, r, j, c, board[i][j], true)) return false;
+				}
+			}
+		}
+	}
+		return true;
+	}else{
+		side = -1;
+		for(int i = KingPosP1.first - 1; i < KingPosP1.first + 2; i++){
+			for(int j = KingPosP1.second - 1; j < KingPosP1.second + 2; j++){
+				if(i > 0 && i < 8 && j > 0 && j < 8 && kingmap1[i][j] == 0) return false;
+			}
+			cout << "\n";
+		}
+		for(int i = 0; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				if(board[i][j] * side == 1){
+					vector<pii> possibleMoves = getMoves(i, j);
+					for(int f = 0; f < possibleMoves.size(); f++){
+						int r = possibleMoves[i].first;
+						int c = possibleMoves[i].second;
+						if(r < 8 && r >= 0 && c < 8 && c >= 0 && board[i][j] * side < 0 && validateMove(i, r, j, c, board[i][j], true)) return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	//else
+	return false;
+}
+
 string pause(bool isPlayer1, bool recursive = false) {
 	//Player 1 = 1
 	//Player 2 = -1
@@ -341,10 +395,10 @@ int main(){
 		PrintBoard();
 		cout << "Command: ";
 		//cout << (isMate(player1Turn) ? "True\n" : "False\n");
-	/*	if(isMate(player1Turn)) {
+		if(isMate(player1Turn)) {
 			cout << (player1Turn ? "Player 2 Wins.\n" : "Player 1 Wins.\n");
 			break;
-		}*/
+		}
 		
 		string command = pause(player1Turn);
 		player1Turn = !player1Turn;
