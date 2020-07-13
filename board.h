@@ -1,13 +1,12 @@
+#ifndef BOARD_H
+#define BOARD_H
+
 #include <bits/stdc++.h>
 #include <stdlib.h>
-using namespace std; 
-typedef pair<int, int> pii;
 
-vector<pii> movementTemp;
-pii KingPosP1;
-pii KingPosP2;
-int kingmap1[8][8];
-int kingmap2[8][8];
+using namespace std; 
+
+typedef pair<int, int> pii;
 
 int board[8][8] = {
 	-1, -2, -3, -4, -5, -3, -2, -1,
@@ -19,6 +18,12 @@ int board[8][8] = {
 	6, 6, 6, 6, 6, 6, 6, 6,
 	1, 2, 3, 4, 5, 3, 2, 1,
 };
+
+vector<pii> movementTemp;
+pii KingPosP1;
+pii KingPosP2;
+int kingmap1[8][8];
+int kingmap2[8][8];
 
 int printCell(int val){
 	switch(val){
@@ -47,7 +52,6 @@ void paintmap(int rd, int cd, int r, int c, int side){
 	
 	r += rd;
 	c += cd;
-	//cout << r << " " << c << " | "<< rd << " " << cd << "\n";
 	
 	if(r > 7 || r < 0) return;
 	if(c > 7 || c < 0) return;
@@ -63,13 +67,6 @@ void paintmap(int rd, int cd, int r, int c, int side){
 bool generateKingmap(int side, int kingmap[8][8]){
 	/** Generates map of places where the king can move on the board */
 	memset(kingmap, 0, sizeof(kingmap[0][0]) * 8 * 8);
-	
-	/*
-	 * UP = -1
-	 * DOWN = 1
-	 * LEFT = -1
-	 * RIGHT = 1
-	 */
 	
 	int r, c;
 	int knight_values[2][8] = {
@@ -138,14 +135,6 @@ bool generateKingmap(int side, int kingmap[8][8]){
 	}
   }
   
-	cout << "\n";
-  	for(int i = 0; i < 8; i++){
-		cout << 8 - i << " ";
-		for(int j = 0; j < 8; j++){
-			cout << abs(kingmap[i][j]) << " ";
-		}
-		cout << "\n";
-	}
 	if(side == 1) {return kingmap[KingPosP1.first][KingPosP1.second] < 0;}
 	else {return kingmap[KingPosP2.first][KingPosP2.second] < 0;}
 }
@@ -160,13 +149,13 @@ bool validateMove(int r1, int r2, int c1, int c2, int piece, bool revert = false
 	board[r2][c2] = piece;
 	
 	if(side == 1){
-		if(generateKingmap(side, kingmap1)){
+		if(generateKingmap(1, kingmap1)){
 			board[r1][c1] = piece;
 			board[r2][c2] = tempPiece;
 			return false;
 		}
 	}else{
-		if(generateKingmap(side, kingmap2)){
+		if(generateKingmap(-1, kingmap2)){
 			board[r1][c1] = piece;
 			board[r2][c2] = tempPiece;
 			return false;
@@ -308,36 +297,40 @@ bool isMate(bool isPlayer1){
 	//isPlayer1
 	int side;
 	
-	if(!generateKingmap(1, kingmap1)) return false;
-		
+	if(isPlayer1){
+		if(!generateKingmap(1, kingmap1)) return false;
+	}else{
+		if(!generateKingmap(-1, kingmap2)) return false;
+	}	
+	
+	if(isPlayer1){
 	if(kingmap1[KingPosP1.first][KingPosP1.second] <= -2){
 		side = 1;
 		for(int i = KingPosP1.first - 1; i < KingPosP1.first + 2; i++){
 			for(int j = KingPosP1.second - 1; j < KingPosP1.second + 2; j++){
 				if(i > 0 && i < 8 && j > 0 && j < 8 && kingmap1[i][j] == 0) return false;
 			}
-			cout << "\n";
 		}
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
-				if(board[i][j] * side == 1){
+				if(board[i][j] * side > 0){
 				vector<pii> possibleMoves = getMoves(i, j);
 				for(int f = 0; f < possibleMoves.size(); f++){
 					int r = possibleMoves[i].first;
 					int c = possibleMoves[i].second;
-					if(r < 8 && r >= 0 && c < 8 && c >= 0 && board[i][j] * side < 0 && validateMove(i, r, j, c, board[i][j], true)) return false;
+					if(r < 8 && r >= 0 && c < 8 && c >= 0 && validateMove(i, r, j, c, board[i][j], true)) return false;
 				}
 			}
 		}
+	  }
 	}
 		return true;
 	}else{
 		side = -1;
-		for(int i = KingPosP1.first - 1; i < KingPosP1.first + 2; i++){
-			for(int j = KingPosP1.second - 1; j < KingPosP1.second + 2; j++){
-				if(i > 0 && i < 8 && j > 0 && j < 8 && kingmap1[i][j] == 0) return false;
+		for(int i = KingPosP2.first - 1; i < KingPosP2.first + 2; i++){
+			for(int j = KingPosP2.second - 1; j < KingPosP2.second + 2; j++){
+				if(i > 0 && i < 8 && j > 0 && j < 8 && kingmap2[i][j] == 0) return false;
 			}
-			cout << "\n";
 		}
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
@@ -353,9 +346,6 @@ bool isMate(bool isPlayer1){
 		}
 		return true;
 	}
-	
-	//else
-	return false;
 }
 
 string pause(bool isPlayer1, bool recursive = false) {
@@ -381,30 +371,4 @@ string pause(bool isPlayer1, bool recursive = false) {
 	return command_display;
 	
 }
-
-
-int main(){
-	ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-
-	bool player1Turn = true;
-
-	cout << "Example command: A7 -> A5 \n";
-	cout << "TURN: " << (player1Turn ? "Player 1\n" : "Player 2\n");
-	
-	while(true){
-		PrintBoard();
-		cout << "Command: ";
-		//cout << (isMate(player1Turn) ? "True\n" : "False\n");
-		if(isMate(player1Turn)) {
-			cout << (player1Turn ? "Player 2 Wins.\n" : "Player 1 Wins.\n");
-			break;
-		}
-		
-		string command = pause(player1Turn);
-		player1Turn = !player1Turn;
-		cout << command << "\n";
-		cout << "TURN: " << (player1Turn ? "Player 1\n" : "Player 2\n");
-	}
-
-	return 0;
-}
+#endif
