@@ -19,6 +19,8 @@ int board[8][8] = {
 	1, 2, 3, 4, 5, 3, 2, 1,
 };
 
+string moveLog = "";
+
 vector<pii> movementTemp;
 pii KingPosP1;
 pii KingPosP2;
@@ -254,13 +256,13 @@ vector<pii> getMoves(int i, int j){
 }
 
 bool checkMove(string command, bool isPlayer1){
-	if(command.length() != 6) return false;
+	if(command.length() != 4  && command.length() != 5) return false;
 	
 	int side;
 	int r1 = 7 - (command[1] - '0' - 1);
-	int c1 = abs(command[0] - 'A');
-	int r2 = 7 - (command[5] - '0' - 1);
-	int c2 = abs(command[4] - 'A');
+	int c1 = abs(command[0] - 'a');
+	int r2 = 7 - (command[3] - '0' - 1);
+	int c2 = abs(command[2] - 'a');
 	if(isPlayer1) side = 1; 
 	else side = -1;
 	
@@ -346,29 +348,5 @@ bool isMate(bool isPlayer1){
 		}
 		return true;
 	}
-}
-
-string pause(bool isPlayer1, bool recursive = false) {
-	//Player 1 = 1
-	//Player 2 = -1
-    cin.clear();
-    if(!recursive) cout << endl << "Last move: ";
-    string command;
-    getline(cin, command);
-    string command_display = command;
-    
-	command.erase(remove(command.begin(), command.end(), ' '), command.end()); 
-	for_each(command.begin(), command.end(), [](char & c){
-		c = ::toupper(c);
-	});
-	
-	if(checkMove(command, isPlayer1)){
-		return command_display;
-	}else{
-		return pause(isPlayer1, true);
-	}
-	
-	return command_display;
-	
 }
 #endif

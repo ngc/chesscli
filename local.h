@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 #include <stdlib.h>
 #include "board.h"
+#include "input.h"
 
 using namespace std; 
 
