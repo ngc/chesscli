@@ -11,7 +11,6 @@ string pause(bool isPlayer1, bool recursive = false, bool isHuman = true) {
     if(!recursive) cout << endl << "Last command: ";
     string command;
     getline(cin, command);
-    string command_display = command;
     
 	if(command.length() == 1){
 		switch(command[0]){
@@ -24,11 +23,11 @@ string pause(bool isPlayer1, bool recursive = false, bool isHuman = true) {
 	command.erase(remove(command.begin(), command.end(), ' '), command.end()); 
 	
 	if(checkMove(command, isPlayer1)){
-		return command_display;
+		return command;
 	}else{
 		return pause(isPlayer1, true);
 	}
 	
-	return command_display;
+	return command;
 }
 #endif
