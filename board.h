@@ -336,7 +336,7 @@ bool isMate(bool isPlayer1){
 		}
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
-				if(board[i][j] * side == 1){
+				if(board[i][j] * side > 0){
 					vector<pii> possibleMoves = getMoves(i, j);
 					for(int f = 0; f < possibleMoves.size(); f++){
 						int r = possibleMoves[i].first;

@@ -15,6 +15,7 @@
 #include <fstream>
 #include <array>
 #include <string>
+#include "board.h"
 
 using namespace std;
 
@@ -32,12 +33,12 @@ string exec(const char* cmd) {
     return result;
 }
 
-string getEngineMove(string position){
+string getEngineMove(string position, bool isPlayer1){
 	ofstream Buffer("enginebuffer.sh");
 	Buffer << "#!/bin/bash\n";
 	Buffer << "echo isready\n";
 	Buffer << "echo position startpos moves " << position << "\n";
-	Buffer << "echo go depth 5\n";
+	Buffer << "echo go depth 10\n";
 	Buffer << "sleep 1\n";
 	Buffer.close();
 	string engineResponse = exec("./enginebuffer.sh | stockfish");
@@ -45,8 +46,13 @@ string getEngineMove(string position){
 		engineResponse.erase(engineResponse.length()-1);
 	}
 	int n = engineResponse.find("bestmove");
-	if(n != -1) return engineResponse.substr(n+9, 4);
-	return "error";
+	if(n != -1) engineResponse = engineResponse.substr(n+9, 4);
+	
+	if(checkMove(engineResponse, isPlayer1)){
+		return engineResponse;
+	}else{
+		return getEngineMove(position, isPlayer1);
+	}
 }
 
 #endif

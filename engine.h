@@ -20,7 +20,6 @@ void engineMode(){
 	
 	while(true){		
 		if(isMate(player1Turn)) {
-			system("clear");
 			cout << (player1Turn ? "Player 2 Wins.\n" : "Player 1 Wins.\n");
 			break;
 		}
@@ -34,8 +33,7 @@ void engineMode(){
 		cout << command << "\n";
 		cout << "TURN: Player 1\n";
 		}else{
-			string command = getEngineMove(position);
-			checkMove(command, player1Turn);
+			string command = getEngineMove(position, player1Turn);
 			position += " " + command;
 			player1Turn = !player1Turn;
 		}
