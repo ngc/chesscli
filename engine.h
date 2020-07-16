@@ -18,10 +18,7 @@ void engineMode(){
 	cout << "Example command: A7 -> A5 \n";
 	cout << "TURN: " << (player1Turn ? "Player 1\n" : "Player 2\n");
 	
-	while(true){
-		system("clear");
-		
-		
+	while(true){		
 		if(isMate(player1Turn)) {
 			system("clear");
 			cout << (player1Turn ? "Player 2 Wins.\n" : "Player 1 Wins.\n");

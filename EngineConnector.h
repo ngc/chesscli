@@ -14,6 +14,7 @@
 #include <string>
 #include <fstream>
 #include <array>
+#include <string>
 
 using namespace std;
 
@@ -32,19 +33,20 @@ string exec(const char* cmd) {
 }
 
 string getEngineMove(string position){
-	ofstream Buffer("enginebuffer");
-	Buffer << "UCI_Elo\n";
-	Buffer << "isready\n";
-	Buffer << "position startpos moves " << position << "\n";
-	Buffer << "go depth 5\n";
-	Buffer << "quit\n";
+	ofstream Buffer("enginebuffer.sh");
+	Buffer << "#!/bin/bash\n";
+	Buffer << "echo isready\n";
+	Buffer << "echo position startpos moves " << position << "\n";
+	Buffer << "echo go depth 5\n";
+	Buffer << "sleep 1\n";
 	Buffer.close();
-	string engineResponse = exec("stockfish < enginebuffer");
-	engineResponse = exec("stockfish < enginebuffer").substr(engineResponse.length() - 5, engineResponse.length() - 1);
+	string engineResponse = exec("./enginebuffer.sh | stockfish");
 	if (!engineResponse.empty() && engineResponse[engineResponse.length()-1] == '\n') {
 		engineResponse.erase(engineResponse.length()-1);
 	}
-	return engineResponse;
+	int n = engineResponse.find("bestmove");
+	if(n != -1) return engineResponse.substr(n+9, 4);
+	return "error";
 }
 
 #endif
