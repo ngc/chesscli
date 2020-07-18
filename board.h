@@ -14,7 +14,7 @@ int board[8][8] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, -2, 0, -2, 0, 0,
 	6, 6, 6, 6, 6, 6, 6, 6,
 	1, 2, 3, 4, 5, 3, 2, 1,
 };
@@ -283,7 +283,7 @@ bool checkMove(string command, bool isPlayer1){
 }
 
 void PrintBoard(){
-	system("clear");
+	//system("clear");
 	for(int i = 0; i < 8; i++){
 		cout << 8 - i << " ";
 		for(int j = 0; j < 8; j++){
@@ -296,6 +296,7 @@ void PrintBoard(){
 }
 
 bool isMate(bool isPlayer1){
+	
 	//isPlayer1
 	int side;
 	
@@ -306,13 +307,7 @@ bool isMate(bool isPlayer1){
 	}	
 	
 	if(isPlayer1){
-	if(kingmap1[KingPosP1.first][KingPosP1.second] <= -2){
 		side = 1;
-		for(int i = KingPosP1.first - 1; i < KingPosP1.first + 2; i++){
-			for(int j = KingPosP1.second - 1; j < KingPosP1.second + 2; j++){
-				if(i > 0 && i < 8 && j > 0 && j < 8 && kingmap1[i][j] == 0) return false;
-			}
-		}
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
 				if(board[i][j] * side > 0){
@@ -320,20 +315,14 @@ bool isMate(bool isPlayer1){
 				for(int f = 0; f < possibleMoves.size(); f++){
 					int r = possibleMoves[i].first;
 					int c = possibleMoves[i].second;
-					if(r < 8 && r >= 0 && c < 8 && c >= 0 && validateMove(i, r, j, c, board[i][j], true)) return false;
+					if(r < 8 && r >= 0 && c < 8 && c >= 0 && board[i][j] * side < 0 && validateMove(i, r, j, c, board[i][j], true)) return false;
 				}
 			}
 		}
 	  }
-	}
 		return true;
 	}else{
 		side = -1;
-		for(int i = KingPosP2.first - 1; i < KingPosP2.first + 2; i++){
-			for(int j = KingPosP2.second - 1; j < KingPosP2.second + 2; j++){
-				if(i > 0 && i < 8 && j > 0 && j < 8 && kingmap2[i][j] == 0) return false;
-			}
-		}
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
 				if(board[i][j] * side > 0){
