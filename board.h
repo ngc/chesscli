@@ -313,9 +313,9 @@ bool isMate(bool isPlayer1){
 				if(board[i][j] * side > 0){
 				vector<pii> possibleMoves = getMoves(i, j);
 				for(int f = 0; f < possibleMoves.size(); f++){
-					int r = possibleMoves[i].first;
-					int c = possibleMoves[i].second;
-					if(r < 8 && r >= 0 && c < 8 && c >= 0 && board[i][j] * side < 0 && validateMove(i, r, j, c, board[i][j], true)) return false;
+					int r = possibleMoves[f].first;
+					int c = possibleMoves[f].second;
+					if(r < 8 && r >= 0 && c < 8 && c >= 0 && board[r][c] * side <=0 && validateMove(i, r, j, c, board[i][j], true)) return false;
 				}
 			}
 		}
@@ -328,9 +328,9 @@ bool isMate(bool isPlayer1){
 				if(board[i][j] * side > 0){
 					vector<pii> possibleMoves = getMoves(i, j);
 					for(int f = 0; f < possibleMoves.size(); f++){
-						int r = possibleMoves[i].first;
-						int c = possibleMoves[i].second;
-						if(r < 8 && r >= 0 && c < 8 && c >= 0 && board[i][j] * side < 0 && validateMove(i, r, j, c, board[i][j], true)) return false;
+						int r = possibleMoves[f].first;
+						int c = possibleMoves[f].second;
+						if(r < 8 && r >= 0 && c < 8 && c >= 0 && board[r][c] * side <= 0 && validateMove(i, r, j, c, board[i][j], true)) return false;
 					}
 				}
 			}
