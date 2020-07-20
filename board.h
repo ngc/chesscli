@@ -19,7 +19,9 @@ int board[8][8] = {
 	1, 2, 3, 4, 5, 3, 2, 1,
 };
 
+//BOARD INFORMATION
 string moveLog = "";
+////////////////////
 
 vector<pii> movementTemp;
 pii KingPosP1;
@@ -169,6 +171,16 @@ bool validateMove(int r1, int r2, int c1, int c2, int piece, bool revert = false
 	if(revert){
 		board[r1][c1] = piece;
 		board[r2][c2] = tempPiece;
+	}else{
+		char temp = c1 + 97;
+		moveLog += temp;
+		temp = 56 - r1;
+		moveLog += temp;
+		temp = c2 + 97;
+		moveLog += temp;
+		temp = 56 - r2;
+		moveLog += temp;
+		moveLog += ' ';
 	}
 	
 	//Set rook moved before
@@ -284,10 +296,10 @@ bool checkMove(string command, bool isPlayer1){
 	if(command.length() != 4  && command.length() != 5) return false;
 	
 	int side;
-	int r1 = 7 - (command[1] - '0' - 1);
-	int c1 = abs(command[0] - 'a');
-	int r2 = 7 - (command[3] - '0' - 1);
-	int c2 = abs(command[2] - 'a');
+	int r1 = -1 * command[1] + 56;
+	int c1 = command[0] - 97;
+	int r2 = -1 * command[3] + 56;
+	int c2 = command[2] - 97;
 	if(isPlayer1) side = 1; 
 	else side = -1;
 	
@@ -384,6 +396,7 @@ bool checkMove(string command, bool isPlayer1){
 }
 
 void PrintBoard(){
+	cout << flush;
 	system("clear");
 	for(int i = 0; i < 8; i++){
 		cout << 8 - i << " ";

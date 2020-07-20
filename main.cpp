@@ -6,9 +6,9 @@
 
 /*
   ██████ ██   ██ ███████ ███████ ███████   ██████ ██      ██ 
- ██      ██   ██ ██      ██      ██       ██      ██      ██ 
- ██      ███████ █████   ███████ ███████  ██      ██      ██ 
- ██      ██   ██ ██           ██      ██  ██      ██      ██ 
+ ██      ██   ██ ██      ██      ██       ██      ██      ██ 
+ ██      ███████ █████   ███████ ███████  ██      ██      ██ 
+ ██      ██   ██ ██           ██      ██  ██      ██      ██ 
   ██████ ██   ██ ███████ ███████ ███████   ██████ ███████ ██  
 */
 
@@ -40,11 +40,11 @@ int main(int argc, char** argv){
 			cout << "   --source prints link to the source code and MIT license for ChessCLI\n\n";
 			
 			cout << "In-Game Arguments:\n";
-			cout << "   q causes the program to exit\n";
+			cout << "   quit causes the program to exit\n";
 			cout << "   Any other commands will be classified as UCI commands.\n";
 			cout << "       Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion).\n";
 		
-		
+		 
 		}else if(argument == "--source"){
 			cout << "https://github.com/thaniel-c/chess\n\n";
 			cout << R"(Chess CLI tool to analyse and play Chess games within a terminal.
@@ -52,7 +52,7 @@ Copyright (C) 2020 Nathan Coulas
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.)" << "\n";
 	}else if(argument == "--local"){

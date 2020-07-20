@@ -12,14 +12,14 @@ string pause(bool isPlayer1, bool recursive = false, bool isHuman = true) {
     string command;
     getline(cin, command);
     
-	if(command.length() == 1){
-		switch(command[0]){
-			case 'q':
-				cout << "Exiting...\n";
-				exit(0);
-		}
+	if(command == "quit"){
+		cout << "Exiting...\n";
+		exit(0);
+	}else if(command == "moves"){
+		cout << moveLog << "\n";
+		exit(0);
 	}
-    
+
 	command.erase(remove(command.begin(), command.end(), ' '), command.end()); 
 	
 	if(checkMove(command, isPlayer1)){

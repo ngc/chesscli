@@ -13,7 +13,7 @@ void localMode(){
 
 	bool player1Turn = true;
 
-	cout << "Example command: A7 -> A5 \n";
+	cout << "Example command: A7A5 \n";
 	cout << "TURN: " << (player1Turn ? "Player 1\n" : "Player 2\n");
 	
 	while(true){
