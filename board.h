@@ -27,6 +27,9 @@ pii KingPosP2;
 int kingmap1[8][8];
 int kingmap2[8][8];
 
+bool rookA = false, rookB = false, rookC = false, rookD = false;
+bool player1King = false, player2King = false;
+
 int printCell(int val){
 	switch(val){
 		case 1: cout << "♖"; break;
@@ -167,6 +170,28 @@ bool validateMove(int r1, int r2, int c1, int c2, int piece, bool revert = false
 		board[r1][c1] = piece;
 		board[r2][c2] = tempPiece;
 	}
+	
+	//Set rook moved before
+	if(abs(board[r1][c1]) == 1){
+		if(r1 == 0){
+			if(c1 == 0){
+				rookA = true;
+			}else if(c1 == 7){
+				rookB = true;
+			}
+		}else if(r1 == 7){
+			if(c1 == 0){
+				rookC = true;
+			}else if(c1 == 7){
+				rookD = true;
+			}
+		}
+	}else if(board[r1][c1] == -5){
+		player2King = true;
+	}else if(board[r1][c1] == 5){
+		player1King = true;
+	}
+	
 	return true;
 }
 
