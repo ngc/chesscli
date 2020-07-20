@@ -6,9 +6,8 @@
 #include "board.h"
 using namespace std;
 
-string pause(bool isPlayer1, bool recursive = false, bool isHuman = true) {
+string pause(bool isPlayer1) {
     cin.clear();
-    if(!recursive) cout << endl << "Last command: ";
     string command;
     getline(cin, command);
     
@@ -25,7 +24,7 @@ string pause(bool isPlayer1, bool recursive = false, bool isHuman = true) {
 	if(checkMove(command, isPlayer1)){
 		return command;
 	}else{
-		return pause(isPlayer1, true);
+		return pause(isPlayer1);
 	}
 	
 	return command;
