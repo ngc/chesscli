@@ -312,6 +312,27 @@ bool checkMove(string command, bool isPlayer1){
 				return validateMove(r1, r2, c1, c2, board[r1][c1]) && validateMove(r2, r2, c2 + iterator, c2 + iterator * -1, board[r1][c2 + iterator]);
 			}
 			return false;
+		}else if(board[r1][c1] == 6 && r2 == 0){
+			if(command.length() != 5) return false;
+			switch(command[4]){
+				case 'r': if(validateMove(r1, r2, c1, c2, board[r1][c1])){
+					board[r2][c2] = 1;
+					return true;
+				}
+				case 'n': if(validateMove(r1, r2, c1, c2, board[r1][c1])){
+					board[r2][c2] = 2;
+					return true;
+				}
+				case 'b': if(validateMove(r1, r2, c1, c2, board[r1][c1])){
+					board[r2][c2] = 3;
+					return true;
+				}
+				case 'q': if(validateMove(r1, r2, c1, c2, board[r1][c1])){
+					board[r2][c2] = 4;
+					return true;
+				}
+			}
+			return false;
 		}
 	}else{
 		if((command == "e8g8" || command == "e8b8") && !player1King && !(rookA && rookB) && board[r1][c1] == 5 && validateMove(r1, r1, c1, c1, board[r1][c1], true)){
@@ -326,6 +347,27 @@ bool checkMove(string command, bool isPlayer1){
 			
 			if(validateMove(r1, r2, c1, c2, board[r1][c1], true) && validateMove(r2, r2, c2 + iterator, c2 + iterator * -1, board[r1][c2 + iterator], true)){
 				return validateMove(r1, r2, c1, c2, board[r1][c1]) && validateMove(r2, r2, c2 + iterator, c2 + iterator * -1, board[r1][c2 + iterator]);
+			}
+			return false;
+		}else if(board[r1][c1] == -6 && r2 == 7){
+			if(command.length() != 5) return false;
+			switch(command[4]){
+				case 'r': if(validateMove(r1, r2, c1, c2, board[r1][c1])){
+					board[r2][c2] = -1;
+					return true;
+				}
+				case 'n': if(validateMove(r1, r2, c1, c2, board[r1][c1])){
+					board[r2][c2] = -2;
+					return true;
+				}
+				case 'b': if(validateMove(r1, r2, c1, c2, board[r1][c1])){
+					board[r2][c2] = -3;
+					return true;
+				}
+				case 'q': if(validateMove(r1, r2, c1, c2, board[r1][c1])){
+					board[r2][c2] = -4;
+					return true;
+				}
 			}
 			return false;
 		}
