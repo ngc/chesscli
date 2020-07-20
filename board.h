@@ -297,6 +297,40 @@ bool checkMove(string command, bool isPlayer1){
 	if((board[r1][c1] * side) < 0) return false;
 	if(board[r2][c2] * side > 0) return false;
 	
+	if(isPlayer1){
+		if((command == "e1g1" || command == "e1b1") && !player1King && !(rookC && rookD) && board[r1][c1] == 5 && validateMove(r1, r1, c1, c1, board[r1][c1], true)){
+			
+			if(command == "e1g1" && rookD) return false;
+			if(command == "e1b1" && rookC) return false;
+			
+			int iterator = (c2 - c1) / abs(c2 - c1);
+			for(int i = 1; i < abs(c2 - c1); i++){
+				if(board[7][4 + i * iterator] != 0) return false;
+			}
+		
+			if(validateMove(r1, r2, c1, c2, board[r1][c1], true) && validateMove(r2, r2, c2 + iterator, c2 + iterator * -1, board[r1][c2 + iterator], true)){
+				return validateMove(r1, r2, c1, c2, board[r1][c1]) && validateMove(r2, r2, c2 + iterator, c2 + iterator * -1, board[r1][c2 + iterator]);
+			}
+			return false;
+		}
+	}else{
+		if((command == "e8g8" || command == "e8b8") && !player1King && !(rookA && rookB) && board[r1][c1] == 5 && validateMove(r1, r1, c1, c1, board[r1][c1], true)){
+			
+			if(command == "e8g8" && rookB) return false;
+			if(command == "e8b8" && rookA) return false;
+			
+			int iterator = (c2 - c1) / abs(c2 - c1);
+			for(int i = 1; i < abs(c2 - c1); i++){
+				if(board[0][4 + i * iterator] != 0) return false;
+			}
+			
+			if(validateMove(r1, r2, c1, c2, board[r1][c1], true) && validateMove(r2, r2, c2 + iterator, c2 + iterator * -1, board[r1][c2 + iterator], true)){
+				return validateMove(r1, r2, c1, c2, board[r1][c1]) && validateMove(r2, r2, c2 + iterator, c2 + iterator * -1, board[r1][c2 + iterator]);
+			}
+			return false;
+		}
+	}
+	
 	vector<pii> possibleMoves = getMoves(r1, c1);
 	for(int i = 0; i < possibleMoves.size(); i++){
 		if(possibleMoves[i].first == r2 && possibleMoves[i].second == c2){
