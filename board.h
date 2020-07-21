@@ -402,8 +402,8 @@ int turns = 1;
 
 void PrintBoard(){
 	system("clear");
-	
-	cout << "TURN " << turns << ": " << (turns % 2 == 1 ? "Player 1\n" : "Player 2\n");
+	if(turns == 1) cout << "\n";
+	cout << "TURN " << turns << ": " << (turns % 2 != 0 ? "Player 1\n" : "Player 2\n");
 	cout << "[" << player2Name << "]\n";
 	for(int i = 0; i < 8; i++){
 		cout << 8 - i << " ";
@@ -414,6 +414,7 @@ void PrintBoard(){
 	}
 	cout << "• A B C D E F G H\n";
 	cout << "[" << player1Name << "]\n";
+	turns++;
 }
 
 bool isMate(bool isPlayer1){

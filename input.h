@@ -8,7 +8,7 @@ using namespace std;
 
 string pause(bool isPlayer1) {
     cin.clear();
-    cout << flush << "Last Command: ";
+    cout << flush;
     string command;
     getline(cin, command);
     
@@ -17,7 +17,6 @@ string pause(bool isPlayer1) {
 		exit(0);
 	}else if(command == "moves"){
 		cout << moveLog << "\n";
-		exit(0);
 	}
 
 	command.erase(remove(command.begin(), command.end(), ' '), command.end()); 
@@ -27,7 +26,7 @@ string pause(bool isPlayer1) {
 	}else{
 		return pause(isPlayer1);
 	}
-	
+	system("clear");
 	return command;
 }
 #endif
