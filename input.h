@@ -8,6 +8,7 @@ using namespace std;
 
 string pause(bool isPlayer1) {
     cin.clear();
+    cout << flush << "Last Command: ";
     string command;
     getline(cin, command);
     

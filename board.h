@@ -21,6 +21,9 @@ int board[8][8] = {
 
 //BOARD INFORMATION
 string moveLog = "";
+string player1Name = "";
+string player2Name = "";
+string date = "";
 ////////////////////
 
 vector<pii> movementTemp;
@@ -395,9 +398,13 @@ bool checkMove(string command, bool isPlayer1){
 	return false;
 }
 
+int turns = 1;
+
 void PrintBoard(){
-	cout << flush;
 	system("clear");
+	
+	cout << "TURN " << turns << ": " << (turns % 2 == 1 ? "Player 1\n" : "Player 2\n");
+	cout << "[" << player2Name << "]\n";
 	for(int i = 0; i < 8; i++){
 		cout << 8 - i << " ";
 		for(int j = 0; j < 8; j++){
@@ -406,7 +413,7 @@ void PrintBoard(){
 		cout << "\n";
 	}
 	cout << "• A B C D E F G H\n";
-	return;
+	cout << "[" << player1Name << "]\n";
 }
 
 bool isMate(bool isPlayer1){
