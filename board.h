@@ -404,7 +404,6 @@ bool checkMove(string command, bool isPlayer1){
 	vector<pii> possibleMoves = getMoves(r1, c1);
 	for(int i = 0; i < possibleMoves.size(); i++){
 		if(possibleMoves[i].first == r2 && possibleMoves[i].second == c2){
-			cout << "DEE";
 			return validateMove(r1, r2, c1, c2, board[r1][c1]);
 		}
 	}

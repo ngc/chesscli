@@ -7,7 +7,6 @@
 using namespace std;
 
 string pause(bool isPlayer1) {
-	cout << "asdfsadf";
     cin.clear();
     cout << flush;
     string command;
