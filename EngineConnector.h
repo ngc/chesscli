@@ -38,8 +38,8 @@ string getEngineMove(string position, bool isPlayer1){
 	Buffer << "#!/bin/bash\n";
 	Buffer << "echo isready\n";
 	Buffer << "echo position startpos moves " << position << "\n";
-	Buffer << "echo go depth 40\n";
-	Buffer << "sleep 4\n";
+	Buffer << "echo go depth 6\n";
+	Buffer << "sleep 1\n";
 	Buffer.close();
 	string engineResponse = exec("./enginebuffer.sh | stockfish");
 	if (!engineResponse.empty() && engineResponse[engineResponse.length()-1] == '\n') {

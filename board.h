@@ -37,21 +37,21 @@ bool player1King = false, player2King = false;
 
 int printCell(int val){
 	switch(val){
-		case 1: cout << "♖"; break;
-		case 2: cout << "♘︎"; break;
-		case 3: cout << "♗︎"; break;
-		case 4: cout << "♕︎"; break;
-		case 5: cout << "♔"; break;
-		case 6: cout << "♙"; break;
+		case -1: cout << "♖"; break;
+		case -2: cout << "♘︎"; break;
+		case -3: cout << "♗︎"; break;
+		case -4: cout << "♕︎"; break;
+		case -5: cout << "♔"; break;
+		case -6: cout << "♙"; break;
 		
 		case 0: cout << "⠀"; break;
 		
-		case -1: cout << "♜"; break;
-		case -2: cout << "♞︎"; break;
-		case -3: cout << "♝︎"; break;
-		case -4: cout << "♛"; break;
-		case -5: cout << "♚"; break;
-		case -6: cout << "♟︎"; break;
+		case 1: cout << "♜"; break;
+		case 2: cout << "♞︎"; break;
+		case 3: cout << "♝︎"; break;
+		case 4: cout << "♛"; break;
+		case 5: cout << "♚"; break;
+		case 6: cout << "♟︎"; break;
 	}
 	cout << "⠀";
 	return 0;
@@ -200,14 +200,27 @@ bool validateMove(int r1, int r2, int c1, int c2, int piece, bool revert = false
 			}else if(c1 == 7){
 				rookD = true;
 			}
+		}else if(abs(board[r2][c2]) == 1){
+			if(r2 == 0){
+				if(c2 == 0){
+					rookA = true;
+				}else if(c2 == 7){
+					rookB = true;
+				}
+			}else if(r2 == 7){
+				if(c2 == 0){
+					rookC = true;
+				}else if(c2 == 7){
+					rookD = true;
+				}
 		}
 	}else if(board[r1][c1] == -5){
 		player2King = true;
 	}else if(board[r1][c1] == 5){
 		player1King = true;
 	}
-	
-	return true;
+  }
+  return true;
 }
 
 void pieceMovement(int rd, int cd, int r, int c){
@@ -391,6 +404,7 @@ bool checkMove(string command, bool isPlayer1){
 	vector<pii> possibleMoves = getMoves(r1, c1);
 	for(int i = 0; i < possibleMoves.size(); i++){
 		if(possibleMoves[i].first == r2 && possibleMoves[i].second == c2){
+			cout << "DEE";
 			return validateMove(r1, r2, c1, c2, board[r1][c1]);
 		}
 	}
@@ -400,10 +414,10 @@ bool checkMove(string command, bool isPlayer1){
 
 int turns = 1;
 
-void PrintBoard(){
+void PrintBoard(int step = 1){
+	cout << '\a';
 	system("clear");
-	if(turns == 1) cout << "\n";
-	cout << "TURN " << turns << ": " << (turns % 2 != 0 ? "Player 1\n" : "Player 2\n");
+	cout << "TURN " << turns << ": " << (turns % 2 != 0 ? "White\n" : "Black\n");
 	cout << "[" << player2Name << "]\n";
 	for(int i = 0; i < 8; i++){
 		cout << 8 - i << " ";
@@ -414,14 +428,13 @@ void PrintBoard(){
 	}
 	cout << "• A B C D E F G H\n";
 	cout << "[" << player1Name << "]\n";
-	turns++;
+	turns += step;
 }
 
 bool isMate(bool isPlayer1){
 	
 	//isPlayer1
 	int side;
-	
 	if(isPlayer1){
 		if(!generateKingmap(1, kingmap1)) return false;
 	}else{

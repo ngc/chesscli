@@ -7,6 +7,7 @@
 using namespace std;
 
 string pause(bool isPlayer1) {
+	cout << "asdfsadf";
     cin.clear();
     cout << flush;
     string command;
@@ -20,7 +21,6 @@ string pause(bool isPlayer1) {
 	}
 
 	command.erase(remove(command.begin(), command.end(), ' '), command.end()); 
-	
 	if(checkMove(command, isPlayer1)){
 		return command;
 	}else{

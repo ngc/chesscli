@@ -27,7 +27,6 @@ void localMode(){
 		
 		string command = pause(player1Turn);
 		player1Turn = !player1Turn;
-		cout << command << "\n";
 	}
 
 	return;

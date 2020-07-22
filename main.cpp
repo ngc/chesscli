@@ -3,6 +3,7 @@
 #include "board.h"
 #include "local.h"
 #include "engine.h"
+#include "fight.h"
 
 /*
  ██████ ██   ██ ███████ ███████ ███████   ██████ ██      ██ 
@@ -38,9 +39,11 @@ int main(int argc, char** argv){
 			cout << "   --local or no arguments starts a local match with two players taking turns controlling the same terminal.\n";
 			cout << "   --cpu or -c starts a match with Stockfish.\n";
 			cout << "   --source prints link to the source code and MIT license for ChessCLI\n\n";
+			cout << "   --fight makes Stockfish fight itself\n\n";
 			
 			cout << "In-Game Arguments:\n";
 			cout << "   quit causes the program to exit\n";
+			cout << "   moves prints all the uci move commands used in the game\n";
 			cout << "   Any other commands will be classified as UCI commands.\n";
 			cout << "       Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion).\n";
 		
@@ -59,6 +62,8 @@ You should have received a copy of the GNU General Public License along with thi
 		localMode();
 	}else if(argument == "--cpu" || argument == "-c"){
 		engineMode();
+	}else if(argument == "--fight"){
+		fight();
 	}else{
 		cout << "Argument not recognized. Use --help for a list of arguments.\n";
 	}
