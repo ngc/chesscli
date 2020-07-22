@@ -153,7 +153,7 @@ bool validateMove(int r1, int r2, int c1, int c2, int piece, bool revert = false
 	int side;
 	if(piece > 0) side = 1;
 	if(piece < 0) side = -1;
-	
+	if(board[r2][c2] * side > 0) return false;
 	int tempPiece = board[r2][c2];
 	board[r1][c1] = 0;
 	board[r2][c2] = piece;
@@ -414,7 +414,6 @@ bool checkMove(string command, bool isPlayer1){
 int turns = 1;
 
 void PrintBoard(int step = 1){
-	cout << '\a';
 	system("clear");
 	cout << "TURN " << turns << ": " << (turns % 2 != 0 ? "White\n" : "Black\n");
 	cout << "[" << player2Name << "]\n";
@@ -430,8 +429,78 @@ void PrintBoard(int step = 1){
 	turns += step;
 }
 
-bool isMate(bool isPlayer1){
+int printCellPreview(int val, bool allowed){
 	
+	if(allowed){
+		switch(val){
+			case -1: cout << "\033[1;32m♖\033[0m"; break;
+			case -2: cout << "\033[1;32m♘\033[0m"; break;
+			case -3: cout << "\033[1;32m♗\033[0m︎"; break;
+			case -4: cout << "\033[1;32m♕\033[0m︎"; break;
+			case -5: cout << "\033[1;32m♔\033[0m"; break;
+			case -6: cout << "\033[1;32m♙\033[0m"; break;
+			
+			case 0: cout << "\033[1;32mX\033[0m"; break;
+			
+			case 1: cout << "\033[1;32m♜\033[0m"; break;
+			case 2: cout << "\033[1;32m♞︎\033[0m"; break;
+			case 3: cout << "\033[1;32m♝︎\033[0m"; break;
+			case 4: cout << "\033[1;32m♛\033[0m"; break;
+			case 5: cout << "\033[1;32m♚\033[0m"; break;
+			case 6: cout << "\033[1;32m♟︎\033[0m"; break;
+	    }	
+	}else{	
+		switch(val){
+			case -1: cout << "\033[1;31m♖\033[0m"; break;
+			case -2: cout << "\033[1;31m♘\033[0m"; break;
+			case -3: cout << "\033[1;31m♗\033[0m︎"; break;
+			case -4: cout << "\033[1;31m♕\033[0m︎"; break;
+			case -5: cout << "\033[1;31m♔\033[0m"; break;
+			case -6: cout << "\033[1;31m♙\033[0m"; break;
+			
+			case 0: cout << "\033[1;31mX\033[0m"; break;
+			
+			case 1: cout << "\033[1;31m♜\033[0m"; break;
+			case 2: cout << "\033[1;31m♞︎\033[0m"; break;
+			case 3: cout << "\033[1;31m♝︎\033[0m"; break;
+			case 4: cout << "\033[1;31m♛\033[0m"; break;
+			case 5: cout << "\033[1;31m♚\033[0m"; break;
+			case 6: cout << "\033[1;31m♟︎\033[0m"; break;
+		}
+	}
+	cout << "⠀";
+	return 0;
+}
+
+void PrintPreview(string command){
+	int r = -1 * command[1] + 56;
+	int c = command[0] - 97;
+	vector<pii> possibleMoves = getMoves(r, c);
+	bool printed = false;
+	system("clear");
+	cout << "TURN " << turns << ": " << (turns % 2 != 0 ? "White\n" : "Black\n");
+	cout << "[" << player2Name << "]\n";
+	for(int i = 0; i < 8; i++){
+		cout << 8 - i << " ";
+		for(int j = 0; j < 8; j++){
+			printed = false;
+			//bool validateMove(int r1, int r2, int c1, int c2, int piece, bool revert = false){
+			for(int x = 0; x < possibleMoves.size(); x++){
+				if(possibleMoves[x].first == i && possibleMoves[x].second == j){
+					printCellPreview(board[i][j], validateMove(r, i, c, j, board[r][c], true));
+					printed = true;
+					break;
+				}
+			}
+			if(!printed) printCell(board[i][j]);
+		}
+		cout << "\n";
+	}
+	cout << "• A B C D E F G H\n";
+	cout << "[" << player1Name << "]\n";
+}
+
+bool isMate(bool isPlayer1){	
 	//isPlayer1
 	int side;
 	if(isPlayer1){
