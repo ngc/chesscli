@@ -215,9 +215,9 @@ bool validateMove(int r1, int r2, int c1, int c2, int piece, bool revert = false
 				}
 		}
 	}else if(board[r1][c1] == -5){
-		player2King = true;
+		//player2King = true;
 	}else if(board[r1][c1] == 5){
-		player1King = true;
+	//	player1King = true;
 	}
   }
   return true;
