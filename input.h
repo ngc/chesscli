@@ -33,7 +33,7 @@ string pause(bool isPlayer1) {
    
    vector<string> commands = tokenize(command);
    
-	if(command == "quit"){
+	if(command == "exit"){
 		cout << "Exiting...\n";
 		exit(0);
 	}else if(command == "moves"){
